@@ -12,11 +12,17 @@
             class="btn btn-primary my-2">投稿する</a>
         <a href="{% url 'accounts:logout' %}"
             class="btn btn-secondary my-2">ログアウト</a>
+            <form action="{% url 'accounts:logout' %}" method="post">
+             {% csrf_token %}
+            <button type="submit">ログアウト</button>
+            </form>    
+                
+            
         {% else %}
         <a href="{% url 'accounts:signup' %}"
-            class="btn btn-primary my-2">今すぐさインアップ</a>
+            class="btn btn-primary my-2">サインアップ</a>
         <a href="{% url 'accounts:login' %}"
-            class="btn btn-secondary my-2">登録済みの方はろグイン</a>
+            class="btn btn-secondary my-2">登録済みの方はログイン</a>
         {% endif %}
         </p>
       </div>

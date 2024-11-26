@@ -163,8 +163,22 @@
             {% if user.is_authenticated %}
             <li><a href="{% url 'photo:mypage' %}"
                     class="text-white">マイページ</a></li>  
+                    
+            <li><a href="{% url 'photo:typing' %}"
+                    class="text-white">タイピング</a></li>       
+                    
             <li><a href="{% url 'accounts:logout' %}"
                     class="text-white">ログアウト</a></li>
+                    
+                <form action="{% url 'accounts:logout' %}" method="post">
+                 {% csrf_token %}
+                 <input type="submit" value="ログアウト">  
+                 </form>    
+                    
+                  
+                    
+                    
+                    
             <li><a href="{% url 'password_reset' %}"
                     class="text-white">パスワードのリセット</a></li>
             <li><a href="mailto:admn@example.com"
@@ -205,7 +219,7 @@
 <footer class="text-muted py-5">
   <div class="container">
     <p class="float-end mb-1">
-      <a href="#">Back to top</a>
+      <a href={% url 'photo:index' %}>Back to top</a>
     </p>
     <p class="mb-1">Photo Gallaery is &copy; Bootstrap, but please post a lot!</p>
   </div>

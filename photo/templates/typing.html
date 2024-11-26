@@ -1,0 +1,245 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Photo Gallxxsxdeery{% endblock %}
+{% block contents %}
+<style>
+    .typing{
+    font-size: 6em;
+    text-align: center;
+}
+
+.count{
+    margin: 0;
+    font-weight: bold;
+    color: #888;
+}
+
+.wrap{
+    margin-top: 20px;
+    padding: 80px 40px;
+    background-color: #666;
+    font-weight: bold;
+    color: #fff;
+}
+
+.typed{
+    color: lightgreen;
+}
+
+.mistyped{
+    background-color: red;
+}
+
+
+</style>
+     <div class="typing">
+        <meta charset="utf-8">
+        <meta name="description" content="簡易的なタイピング">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <form>
+        <label>カテゴリ選択</label>
+        <select id="select">
+            <option value=1>中学</option>
+            <option value=2>高校</option>
+        </select>
+        </form>
+        <p id="count" class="count">30</p>
+        <div id="wrap" class="wrap">
+            <h1 id="trans" ></h1>
+            <span id="typed" class="typed"></span>
+            <span id="untyped"></span>
+            <h1 id="end"></h1>
+        </div>
+        <button id="start">スタート</button>
+        
+        
+        <script>
+        let untyped='';
+            let typed='';
+            let score=0;
+            
+            var textLists;
+            var transLists
+            const untypedfield=document.getElementById('untyped');
+            const typedfield=document.getElementById('typed');
+            const wrap = document.getElementById('wrap');
+            const start=document.getElementById('start')
+            const count=document.getElementById('count')
+            const transfield=document.getElementById('trans');
+            const endfield=document.getElementById('end');
+
+            const select=document.getElementById('select');
+            let value=select.value;
+            textLists = [
+            {% for area in postC %}
+            {% with index=forloop.counter0 %}
+            {% if 0 < index%},{% endif %}
+            {% endwith %}
+            "{{area.word}}"
+            {% endfor %}
+            ];  
+
+            transLists = [
+            {% for area in postC %}
+            {% with index=forloop.counter0 %}
+            {% if 0 < index%},{% endif %}
+            {% endwith %}
+            "{{area.trans}}"
+            {% endfor %}
+            ];
+            
+            
+            select.addEventListener("change", () => {
+            value=select.value;
+            console.log(value)
+            if(value==2){
+            textLists = [
+            {% for area in postC %}
+            {% with index=forloop.counter0 %}
+            {% if 0 < index%},{% endif %}
+            {% endwith %}
+            "{{area.word}}"
+            {% endfor %}
+            ];  
+
+            transLists = [
+            {% for area in postC %}
+            {% with index=forloop.counter0 %}
+            {% if 0 < index%},{% endif %}
+            {% endwith %}
+            "{{area.trans}}"
+            {% endfor %}
+            ];
+            }else{
+            textLists = [
+            {% for area in postH %}
+            {% with index=forloop.counter0 %}
+            {% if 0 < index%},{% endif %}
+            {% endwith %}
+            "{{area.word}}"
+            {% endfor %}
+            ];
+            
+
+            transLists= [
+            {% for area in postH %}
+            {% with index=forloop.counter0 %}
+            {% if 0 < index%},{% endif %}
+            {% endwith %}
+            "{{area.trans}}"
+            {% endfor %}
+            ];
+            }
+        });
+          
+            let random;
+            
+            const createText =()=>{
+                typed='';
+                typedfield.textContent=typed;
+                
+                console.log(Math.floor(Math.random()*textLists.length));
+                random=(Math.floor(Math.random()*textLists.length));
+                untyped = textLists[random];
+                strHead=untyped.slice(0,1);
+                blank='';
+                for(i = 0; i<untyped.length-1; i++){
+                    blank+='□'
+                    console.log(blank)
+                }            
+                untypedfield.textContent=strHead+blank;
+                transfield.textContent=transLists[random];
+                
+            };
+            
+            
+            const keyPress=e=>{
+                console.log(e.key);
+                if(e.key !==untyped.substring(0,1)){
+                    wrap.classList.add('mistyped')
+                    setTimeout(()=>{
+                        wrap.classList.remove('mistyped')
+                    },100)
+                    return;
+                }
+                
+                score++;
+                typed+=untyped.substring(0,1);
+                untyped=untyped.substring(1);
+                typedfield.textContent=typed;
+                console.log(untyped.length)
+                blank='';
+                for(i = 0; i<untyped.length; i++){
+                    blank+='□'
+                    console.log(blank)
+                }
+                untypedfield.textContent=blank;
+                if(untyped===''){
+                    createText()
+                }
+            };
+            const rankCheck=score=>{
+                let text='';
+                if(score<100){
+                    text = `あなたのランクはCです。\nBランクまであと${100 - score}文字です。`;
+                } else if(score < 200) {
+                  text = `あなたのランクはBです。\nAランクまであと${200 - score}文字です。`;    
+                } else if(score < 300) {
+                  text = `あなたのランクはAです。\nSランクまであと${300 - score}文字です。`;    
+                } else if(score >= 300) {
+                  text = `あなたのランクはSです。\nおめでとうございます!`;    
+                }
+                return  `${score}文字打てました!\n${text}\n【OK】リトライ / 【キャンセル】終了`
+                
+            };
+            const gameOver=id=>{
+                
+                clearInterval(id);
+               
+                typedfield.textContent=textLists[random];
+                untypedfield.textContent='';
+                endfield.textContent='タイムアップ';
+                setTimeout(()=>{
+                    const result=confirm(rankCheck(score));
+                if(result==true){
+                    window.location.reload();
+                    }
+            
+                },500)
+               
+                  
+               
+            
+            };
+            const timer=()=>{
+                let time=count.textContent;
+                const id =setInterval(()=>{
+                    time--;
+                    count.textContent=time;
+                    if(time<=0){
+                        
+                        gameOver(id);
+                    }
+                },1000);
+            };
+            start.addEventListener('click',()=>{
+                createText();
+                timer();
+                start.style.display='none';
+                document.addEventListener('keypress',keyPress);
+            });
+            untypedfield.textContent='スタートしてください';
+            
+
+            </script>
+     </div>
+
+{% endblock %}
+
+<!-- {% for product in object_list %}
+<tr>
+<td>{{ product.word }}</td>
+<td>{{ product.trans }} 円</td>
+</tr>
+{% endfor %} -->

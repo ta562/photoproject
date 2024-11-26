@@ -3,6 +3,11 @@ body {
   height: 100%;
 }
 
+.typing{
+  font-size: 1em;
+  color: brown;
+}
+
 .form-signin {
   max-width: 330px;
   padding: 1rem;

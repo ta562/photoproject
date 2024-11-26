@@ -4,6 +4,7 @@ from django.urls import path
 from .import views
 app_name='photo'
 urlpatterns=[path('',views.IndexView.as_view(),name='index'),
+             
              path('post/',views.CreatePhotoView.as_view(),name='post'),
              path('post_done/',views.PostSuccessView.as_view(),name='post_done'),
              path('photos/<int:category>',
@@ -21,5 +22,6 @@ urlpatterns=[path('',views.IndexView.as_view(),name='index'),
              path('mypage/',views.MypageView.as_view(), name='mypage'),
              path('photo/<int:pk>/delete/',
                   views.PhotoDeleteView.as_view(),
-                  name='photo_delete')
+                  name='photo_delete'),
+             path('typing/',views.TypingView.as_view(), name='typing')
              ]

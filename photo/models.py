@@ -7,7 +7,41 @@ class Category(models.Model):
     
     def __str__(self):
         return self.title
-    
+
+class EnglishsScore(models.Model):
+    user=models.ForeignKey(
+        CustomUser,
+        verbose_name='ユーザー',
+        on_delete=models.CASCADE
+    )
+    score=models.CharField(
+        verbose_name='得点',
+        max_length=200
+        
+    )
+    def __str__(self):
+        return self.score
+
+
+class EnglishWords(models.Model):
+    word=models.CharField(
+        verbose_name='英語',
+        max_length=200
+
+         )
+    trans=models.CharField(
+        verbose_name='翻訳',
+        max_length=200
+    )
+    category=models.ForeignKey(
+        Category,
+        verbose_name='カテゴリ',
+        on_delete=models.PROTECT
+        )
+    def __str__(self):
+        return self.word
+
+
 class PhotoPost(models.Model):
     user=models.ForeignKey(
         CustomUser,

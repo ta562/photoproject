@@ -1,11 +1,11 @@
 from django.shortcuts import render
-from django.views.generic import TemplateView,ListView
+from django.views.generic import TemplateView,ListView,View
 from django.views.generic import CreateView
 from django.urls import reverse_lazy
 from .forms import PhotoPostForm
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
-from .models import PhotoPost
+from .models import PhotoPost,EnglishWords
 from django.views.generic import DetailView
 from django.views.generic import DeleteView
 
@@ -26,6 +26,8 @@ class CategoryView(ListView):
 class DetailView(DetailView):
     template_name = 'detail.html'
     model=PhotoPost
+
+
 
 class MypageView(ListView):
     template_name='mypage.html'
@@ -64,3 +66,23 @@ class UserView(ListView):
         user_list=PhotoPost.objects.filter(
             user=user_id).order_by('-posted_at')
         return user_list
+    
+class TypingView(TemplateView):
+    template_name='typing.html'
+    def get_context_data(self,**kwargs):
+        context=super().get_context_data(**kwargs)
+        postsC=EnglishWords.objects.all().filter(category=6)
+        postsH=EnglishWords.objects.all().filter(category=5)
+        context['postC']=postsC
+        context['postH']=postsH
+        return context
+
+
+    # def get_context_data(self, **kwargs):
+    #    context = super().get_context_data(**kwargs)        #super()で呼び出し
+    #    posts = Post.objects.all().order_by('-created_at')  #HTMLに引き渡すオブジェクトを作成
+    #    context['posts'] = posts                            #contextにキーを指定して渡す
+
+    #    #用意したデータを追加したcontextを返す
+    #    #HTMLでは{{ posts }}でデータ操作→表示可能
+    #    return context
