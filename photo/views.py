@@ -158,6 +158,7 @@ def ajax_get_createparentcategory(request):
 
 def ajax_get_printlist(request):
         categorys = request.GET.get('pk')
+        english_id=list(EnglishWords.objects.filter(category=categorys).values_list('id', flat=True))
         english_text=list(EnglishWords.objects.filter(category=categorys).values_list('word', flat=True))
         trans_text=list(EnglishWords.objects.filter(category=categorys).values_list('trans', flat=True))
         category_text=list(Category.objects.filter(parent=categorys).values_list('title',flat=True))
@@ -165,7 +166,7 @@ def ajax_get_printlist(request):
         parentcategory_text=list(ParentCategory.objects.values_list('title',flat=True))
         parentcategory_id=list(ParentCategory.objects.values_list('id',flat=True))
     # [ {'name': 'サッカー', 'pk': '3'}, {...}, {...} ] という感じのリストになる
-        data ={'message':english_text,'message2':trans_text,'message3':category_text,'message4':parentcategory_text,'message5':parentcategory_id,'message6':category_id}
+        data ={'message':english_text,'message2':trans_text,'message3':category_text,'message4':parentcategory_text,'message5':parentcategory_id,'message6':category_id,'message7':english_id}
     # JSONで返す
         return JsonResponse(data)
 # modelsaveで保存してしまう
@@ -192,6 +193,24 @@ def ajax_get_deletecategory(request):
         print('delete')
         text = request.GET.get('id')
         obj=Category.objects.filter(id=text)
+        obj.delete()
+        responsetext = '削除'
+        return JsonResponse({'response': responsetext})
+
+def ajax_get_createword(request):
+        print('save')
+        text1 = request.GET.get('word')
+        text2 = request.GET.get('trans')
+        id = request.GET.get('category')
+        obj=EnglishWords(word=text1,trans=text2,category_id=id)
+        obj.save()
+        category_list = '保存'
+        return JsonResponse({'categoryList': category_list})
+
+def ajax_get_deleteword(request):
+        print('delete')
+        text = request.GET.get('id')
+        obj=EnglishWords.objects.filter(id=text)
         obj.delete()
         responsetext = '削除'
         return JsonResponse({'response': responsetext})

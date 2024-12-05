@@ -44,7 +44,7 @@
   
   <p>
     <label for="id_trans">翻訳:</label>
-    <input type="text" name="trans" maxlength="200" required id="ransvalue">
+    <input type="text" name="trans" maxlength="200" required id="transvalue">
     <list>
       <button id='saveword'>作成</button><!-- 新規と編集で表示を変更 -->
     </list>
@@ -78,6 +78,7 @@
     const categoryElement = $('#id_category');
     const wordvalueElement = $('#wordvalue');  
     const transvalueElement = $('#transvalue');  
+    const actionElement=$('#action');
     const printselect=()=>{
       console.log('chans')        
       var category_value=1;
@@ -109,24 +110,23 @@
     const changeCategory = (select) => {
         categoryElement.children().remove();
         $.ajax({
-            url: '{% url 'photo:ajax_get_category' %}',
+            url: '{% url 'photo:ajax_get_printlist' %}',
             type: 'GET',
             data: {
                 'pk': parentCategoryElement.val(),
             }
         }).done(response => {
-            // 子カテゴリの選択肢を作成・追加
-            for (const category of response.categoryList) {
-                const option = $('<option>');
-                option.val(category['pk']);
-                option.text(category['title']);
-                categoryElement.append(option);
-            }
-
-            // 指定があれば、そのカテゴリを選択する
-            if (select !== undefined) {
-                categoryElement.val(select);
-            }
+          var textLists=response.message3; 
+          textId=response.message6;             
+          console.log(textLists)
+          for(let i=0; i<textLists.length; i++){
+            const select=document.getElementById('id_category');
+            let option=document.createElement('option');
+            option.text=textLists[i];
+            option.value=textId[i];
+           
+            select.appendChild(option);
+          }
             printlist();
         });
     };
@@ -148,19 +148,18 @@
         
         var category_value=categoryElement.val();
             console.log(category_value);
-        
-        var xhr=new XMLHttpRequest();
-        xhr.open('POST','/process/', true);
-        xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
-        xhr.onreadystatechange=function(){
-            if(xhr.readyState === 4 && xhr.status === 200){
-                var resultDiv=document.getElementById('result');
-                var responseData=JSON.parse(xhr.responseText);
-                textLists=responseData.message;
-                transLists=responseData.message2;
+            $.ajax({
+              url: '{% url 'photo:ajax_get_printlist' %}',
+              type: 'GET',
+              data: {
+                'pk': category_value,
+                    }
+            }).done(response => {     
+                textLists=response.message;
+                transLists=response.message2;
                 console.log(textLists)
                 console.log(transLists)
-                
+                textId=response.message7;
                
 
                 var table = document.getElementById("tbl1");  // 行の削除
@@ -185,24 +184,47 @@
                     tr.appendChild(cell);
                     tr.appendChild(cell2);
                    tbl.appendChild(tr);
-                }
-            }
-        };
-        xhr.send('categorys=' + category_value);
-    }
+                  }
+                });
+              };
+        printselect();
+        parentCategoryElement.on("change",()=>{
+            printlist();
+        })
+    
 
     categoryElement.on("change",()=>{
         printlist();
     })
 
-
+ //削除
+ $('#deletebutton').on('click',function(){
+  if(actionElement.val()=='delete_selected'){
+   
+    console.log('gf');
+    $('input:checked').each(function() {
+      var r = $(this).val();
+      
+      console.log(r);
+      $.ajax({
+        url: '{% url 'photo:ajax_get_deleteword' %}',
+        type: 'GET',
+        data: {'id': r}
+      }).done(response => {
+        console.log('delete');
+        printlist();
+      });
+  })
+    
+}
+})
     $('#saveword').on('click',function(){
       if(checkkaraMoji(wordvalueElement.val())==false){
         return false;
       }else if(checkkaraMoji(transvalueElement.val())==false){
         return false;
       }else{
-        console.log(wordvalue.val())
+        console.log(wordvalueElement.val())
         $.ajax({
           url: '{% url 'photo:ajax_get_createword' %}',
           type: 'GET',

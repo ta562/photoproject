@@ -35,5 +35,6 @@ urlpatterns=[path('',views.IndexView.as_view(),name='index'),
              path('api/createparentcategory/get/', views.ajax_get_createparentcategory, name='ajax_get_createparentcategory'),
              path('api/createcategory/get/', views.ajax_get_createcategory, name='ajax_get_createcategory'),
              path('api/deletecategory/get/', views.ajax_get_deletecategory, name='ajax_get_deletecategory'),
-
+             path('api/createword/get/', views.ajax_get_createword, name='ajax_get_createword'),
+             path('api/deleteword/get/', views.ajax_get_deleteword, name='ajax_get_deleteword'),
 ]
