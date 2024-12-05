@@ -1,0 +1,230 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}ENtyping {% endblock %}
+{% block contents %}
+<style>
+    form{
+        font-size: 2em;
+        text-align: center;
+    }
+
+    .table{ 
+
+      font-size: 1rem;
+        width: 500px;
+     text-align: center;
+     border-collapse: collapse;
+     border-spacing: 0;
+      }
+    p{
+      margin: 10px;
+    }
+    
+    
+      table th{
+        padding: 10px;
+        border-bottom: solid 4px #d4d6d6;
+        color: #778ca3
+      }
+    
+      table td{
+        padding: 10px;
+        border-bottom: solid 1px #d4d6d6;
+      }
+</style>
+<h1>単語登録・削除</h1>
+
+    <p>
+    <label for="id_word">英語:</label>
+    <input type="text" name="word" maxlength="200" required id="wordvalue">
+    
+    
+  </p>
+
+  
+  <p>
+    <label for="id_trans">翻訳:</label>
+    <input type="text" name="trans" maxlength="200" required id="ransvalue">
+    <list>
+      <button id='saveword'>作成</button><!-- 新規と編集で表示を変更 -->
+    </list>
+    
+  </p>
+  <label for="id_parent">親カテゴリ:</label>
+  <select name="parent_category" id="id_parent">
+  <option value="" selected>---------</option>
+  </select>
+  <label for="id_category">カテゴリ:</label>
+  <select name="parent_category" id="id_category">
+  <option value="" selected>---------</option>
+  </select>
+  <br> <block>
+  <p>
+    <select id="action" >
+    <option value="" selected>---------</option>
+    <option value="delete_selected">選択された parent categorys の削除</option>
+  </select>
+</label><input type="hidden" name="select_across" value="0" class="select-across"> 
+  <button  id="deletebutton" title="選択された操作を実行" name="index" value="0">実行</button>
+</p>
+<div class="tables">
+    <table id="tbl1" class="table" >
+    </table>
+    </div>
+  {% endblock %}
+  {% block extrajs %}
+  <script>
+    const parentCategoryElement = $('#id_parent');
+    const categoryElement = $('#id_category');
+    const wordvalueElement = $('#wordvalue');  
+    const transvalueElement = $('#transvalue');  
+    const printselect=()=>{
+      console.log('chans')        
+      var category_value=1;
+      console.log(category_value)  
+      $.ajax({
+          url: '{% url 'photo:ajax_get_printlist' %}',
+          type: 'GET',
+          data: {
+            'pk': category_value,
+                }
+        }).done(response => {              
+          
+              var textLists=response.message4; 
+              textId=response.message5;             
+              console.log(textLists)
+             
+              for(let i=0; i<textLists.length; i++){
+                const select=document.getElementById('id_parent');
+                let option=document.createElement('option');
+                option.text=textLists[i];
+                option.value=textId[i];
+               
+                select.appendChild(option);
+              }
+          });
+        };
+
+        printselect();
+    const changeCategory = (select) => {
+        categoryElement.children().remove();
+        $.ajax({
+            url: '{% url 'photo:ajax_get_category' %}',
+            type: 'GET',
+            data: {
+                'pk': parentCategoryElement.val(),
+            }
+        }).done(response => {
+            // 子カテゴリの選択肢を作成・追加
+            for (const category of response.categoryList) {
+                const option = $('<option>');
+                option.val(category['pk']);
+                option.text(category['title']);
+                categoryElement.append(option);
+            }
+
+            // 指定があれば、そのカテゴリを選択する
+            if (select !== undefined) {
+                categoryElement.val(select);
+            }
+            printlist();
+        });
+    };
+
+    parentCategoryElement.on('change', () => {
+        changeCategory();
+        console.log('change');
+    });
+
+    // 入力値に問題があって再表示された場合、ページ表示時点で小カテゴリが絞り込まれるようにする
+    if (parentCategoryElement.val()) {
+        const selectedCategory = categoryElement.val();
+        changeCategory(selectedCategory);
+    }
+
+    
+    const printlist=()=>{
+        console.log('chanf')
+        
+        var category_value=categoryElement.val();
+            console.log(category_value);
+        
+        var xhr=new XMLHttpRequest();
+        xhr.open('POST','/process/', true);
+        xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+        xhr.onreadystatechange=function(){
+            if(xhr.readyState === 4 && xhr.status === 200){
+                var resultDiv=document.getElementById('result');
+                var responseData=JSON.parse(xhr.responseText);
+                textLists=responseData.message;
+                transLists=responseData.message2;
+                console.log(textLists)
+                console.log(transLists)
+                
+               
+
+                var table = document.getElementById("tbl1");  // 行の削除
+                while (table.rows.length > 0) table.deleteRow(0);
+                for(let i=0; i<textLists.length; i++){
+                    const tbl=document.getElementById('tbl1');
+                    let tr=document.createElement('tr');
+                    
+                    let check=document.createElement('input');
+                    check.setAttribute('type','checkbox');
+                    check.setAttribute('value',textId[i]);
+                    let cell1=document.createElement('td');
+                    cell1.appendChild(check);
+                   
+                    let cell=document.createElement('td');
+                    let celltext=document.createTextNode(textLists[i]);
+                    cell.appendChild(celltext);
+                    let cell2=document.createElement('td');
+                    let celltrans=document.createTextNode(transLists[i]);
+                    cell2.appendChild(celltrans);
+                    tr.appendChild(cell1);
+                    tr.appendChild(cell);
+                    tr.appendChild(cell2);
+                   tbl.appendChild(tr);
+                }
+            }
+        };
+        xhr.send('categorys=' + category_value);
+    }
+
+    categoryElement.on("change",()=>{
+        printlist();
+    })
+
+
+    $('#saveword').on('click',function(){
+      if(checkkaraMoji(wordvalueElement.val())==false){
+        return false;
+      }else if(checkkaraMoji(transvalueElement.val())==false){
+        return false;
+      }else{
+        console.log(wordvalue.val())
+        $.ajax({
+          url: '{% url 'photo:ajax_get_createword' %}',
+          type: 'GET',
+          data: {'word': wordvalueElement.val(),'trans':transvalueElement.val(),'category':categoryElement.val(),}
+        }).done(response => {
+          console.log('save');
+          printlist();
+          $('#wordvalue').val(""); 
+          $('#transvalue').val(""); 
+        });
+      }
+    });
+
+    const checkkaraMoji=(checkStr)=>{
+      if(!checkStr){
+        console.log('空文');
+        alert('空欄です')
+        return false;
+      }else{
+        console.log('文字列');
+      }
+    }
+</script>
+
+{% endblock %}

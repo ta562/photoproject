@@ -23,5 +23,17 @@ urlpatterns=[path('',views.IndexView.as_view(),name='index'),
              path('photo/<int:pk>/delete/',
                   views.PhotoDeleteView.as_view(),
                   name='photo_delete'),
-             path('typing/',views.TypingView.as_view(), name='typing')
-             ]
+             path('typing/',views.TypingView.as_view(), name='typing'),
+             path('process/',views.process, name='process'),
+             path('create/',views.CreateView.as_view(),name='create'),
+             path('api/category/get/', views.ajax_get_category, name='ajax_get_category'),
+             path('createcategory/',views.CreateCategoryView.as_view(),name='createcategory'),
+             path('createparentcategory/',views.CreateParentCategoryView.as_view(),name='createparentcategory'),
+             
+             path('api/printlist/get/', views.ajax_get_printlist, name='ajax_get_printlist'),
+             path('api/deleteparentcategory/get/', views.ajax_get_deleteparentcategory, name='ajax_get_deleteparentcategory'),
+             path('api/createparentcategory/get/', views.ajax_get_createparentcategory, name='ajax_get_createparentcategory'),
+             path('api/createcategory/get/', views.ajax_get_createcategory, name='ajax_get_createcategory'),
+             path('api/deletecategory/get/', views.ajax_get_deletecategory, name='ajax_get_deletecategory'),
+
+]

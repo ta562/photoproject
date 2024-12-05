@@ -1,38 +1,60 @@
 from django.db import models
 from accounts.models import CustomUser
+from django.urls import reverse
+class ParentCategory(models.Model):
+    title=models.CharField(
+        verbose_name='親カテゴリ',
+        max_length=200,
+        blank=True, 
+        null=True
+    )    
+    def __str__(self):
+       return self.title
+    
+
 class Category(models.Model):
     title=models.CharField(
         verbose_name='カテゴリ',
-        max_length=20)
+        max_length=200)
+    parent=models.ForeignKey(
+        ParentCategory,
+        verbose_name='親カテゴリ',
+        on_delete=models.PROTECT
+        )
     
     def __str__(self):
         return self.title
 
-class EnglishsScore(models.Model):
+class EnglishScore(models.Model):
     user=models.ForeignKey(
         CustomUser,
         verbose_name='ユーザー',
         on_delete=models.CASCADE
-    )
-    score=models.CharField(
-        verbose_name='得点',
-        max_length=200
-        
-    )
+        )
+    
+ 
+    category=models.ForeignKey(
+        Category,
+        verbose_name='カテゴリ',
+        on_delete=models.PROTECT
+        )
+    
     def __str__(self):
-        return self.score
+        return self.user
 
 
 class EnglishWords(models.Model):
     word=models.CharField(
         verbose_name='英語',
         max_length=200
+        
 
          )
     trans=models.CharField(
         verbose_name='翻訳',
         max_length=200
     )
+  
     category=models.ForeignKey(
         Category,
         verbose_name='カテゴリ',
@@ -40,8 +62,7 @@ class EnglishWords(models.Model):
         )
     def __str__(self):
         return self.word
-
-
+  
 class PhotoPost(models.Model):
     user=models.ForeignKey(
         CustomUser,

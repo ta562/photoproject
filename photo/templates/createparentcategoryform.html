@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}ENtyping {% endblock %}
+{% block contents %}
+<style>
+    form{
+        font-size: 2em;
+        text-align: center;
+    }
+    .table{ 
+
+      font-size: 1rem;
+        width: 500px;
+     text-align: center;
+     border-collapse: collapse;
+     border-spacing: 0;
+      }
+    p{
+      margin: 10px;
+    }
+    
+    
+    
+      table th{
+        padding: 10px;
+        border-bottom: solid 4px #d4d6d6;
+        color: #778ca3
+      }
+    
+      table td{
+        padding: 10px;
+        border-bottom: solid 1px #d4d6d6;
+      }
+</style>
+
+<h1>親カテゴリ登録・削除</h1>
+
+<list>
+  <label for='parentcategoryvalue'>親カテゴリ:</label>
+  <input type="text" name="title" maxlength="200" id="parentcategoryvalue">
+</list>
+
+<list>
+  <button id='saveparentcategory'>作成</button><!-- 新規と編集で表示を変更 -->
+</list>
+
+<div class="actions">
+  
+    
+  <label>操作: <select id="action" required>
+<option value="" selected>---------</option>
+
+<option value="delete_selected">選択された parent categorys の削除</option>
+
+</select></label><input type="hidden" name="select_across" value="0" class="select-across"> 
+  <button  id="deletebutton" title="選択された操作を実行" name="index" value="0">実行</button>
+
+      
+  
+  
+
+</div> 
+<div class="tables">
+    <table id="tbl1" class="table" >
+
+    </table>
+  {% endblock %}
+  {% block extrajs %}
+  <script>
+   
+
+    const printlist=()=>{
+      console.log('chanf')        
+      var category_value=1;
+      console.log(category_value);
+      $.ajax({
+        url: '{% url 'photo:ajax_get_printlist' %}',
+        type: 'GET',
+        data: {
+          'pk': category_value,
+              }
+      }).done(response => {
+        textLists=response.message4;
+        textId=response.message5;
+        console.log(textLists)
+        var table = document.getElementById("tbl1");  // 行の削除
+        while (table.rows.length > 0) table.deleteRow(0);
+        for(let i=0; i<textLists.length; i++){
+          const tbl=document.getElementById('tbl1');
+          let tr=document.createElement('tr');
+          let check=document.createElement('input');
+          check.setAttribute('type','checkbox');
+          check.setAttribute('value',textId[i]);
+          let cell=document.createElement('td');
+          cell.appendChild(check);
+          tr.appendChild(cell);
+          let td=document.createElement('td');
+          let celltext=document.createTextNode(textLists[i]);
+          td.appendChild(celltext);
+          tr.appendChild(td);
+          tbl.appendChild(tr);
+        }
+      });
+    };
+    printlist();
+    const saveparentCategoryElement = $('#saveparentcategory');
+    const parentcategoryvalueElement = $('#parentcategoryvalue');    
+    const deletebuttonElement = $('#deletebutton');  
+    const actionElement=$('#action');
+
+    //削除
+    $('#deletebutton').on('click',function(){
+      if(actionElement.val()=='delete_selected'){
+       
+        console.log('gf');
+        $('input:checked').each(function() {
+          var r = $(this).val();
+          
+          console.log(r);
+          $.ajax({
+            url: '{% url 'photo:ajax_get_deleteparentcategory' %}',
+            type: 'GET',
+            data: {'title': r}
+          }).done(response => {
+            console.log('delete');
+            printlist();
+          });
+      })
+        
+      }
+      
+      
+    })
+    //保存
+    $('#saveparentcategory').on('click',function(){
+      if(checkkaraMoji(parentcategoryvalueElement.val())==false){
+        return false;
+      }else{
+        console.log(parentcategoryvalueElement.val())
+        $.ajax({
+          url: '{% url 'photo:ajax_get_createparentcategory' %}',
+          type: 'GET',
+          data: {'title': parentcategoryvalueElement.val(),}
+        }).done(response => {
+          console.log('save');
+          printlist();
+          $('#parentcategoryvalue').val("");   
+        });
+      }
+    });
+      
+    const checkkaraMoji=(checkStr)=>{
+      if(!checkStr){
+        console.log('空文');
+        alert('空欄です')
+        return false;
+      }else{
+        console.log('文字列');
+      }
+    }
+
+
+          
+</script>
+
+{% endblock %}

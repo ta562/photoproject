@@ -1,10 +1,14 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Photo Gallxxsxdeery{% endblock %}
+{% block title %}ENtyping {% endblock %}
 {% block contents %}
 <style>
     .typing{
-    font-size: 6em;
+    font-size: 4em;
+    text-align: center;
+}
+form{
+    font-size: 2em;
     text-align: center;
 }
 
@@ -12,16 +16,22 @@
     margin: 0;
     font-weight: bold;
     color: #888;
+
 }
 
 .wrap{
     margin-top: 20px;
-    padding: 80px 40px;
+    padding: 20px 40px;
     background-color: #666;
     font-weight: bold;
     color: #fff;
 }
 
+.start{
+    font-size: 4em;
+    text-align: center;
+    margin: 20px
+}
 .typed{
     color: lightgreen;
 }
@@ -29,131 +39,213 @@
 .mistyped{
     background-color: red;
 }
+.tables{
+    text-align: center;
+}
+
+table{ margin: auto;
+
+    font-size: 1rem;
+    width: 50%;
+ text-align: center;
+ border-collapse: collapse;
+ border-spacing: 0;
+  }
+
+
+
+  table th{
+    padding: 10px;
+    border-bottom: solid 4px #d4d6d6;
+    color: #778ca3
+  }
+
+  table td{
+    padding: 10px;
+    border-bottom: solid 1px #d4d6d6;
+  }
+
+
+{% comment %}
+  .field {
+    display: flex;
+    justify-content: space-around;
+    }
+
+{% endcomment %}
+
+
 
 
 </style>
-     <div class="typing">
+
         <meta charset="utf-8">
         <meta name="description" content="簡易的なタイピング">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        
-        <form>
-        <label>カテゴリ選択</label>
-        <select id="select">
-            <option value=1>中学</option>
-            <option value=2>高校</option>
-        </select>
+
+        <form action="" method="POST">
+            {{ form.as_p }}
         </form>
-        <p id="count" class="count">30</p>
-        <div id="wrap" class="wrap">
-            <h1 id="trans" ></h1>
-            <span id="typed" class="typed"></span>
-            <span id="untyped"></span>
-            <h1 id="end"></h1>
+
+        <div class='typing'>
+            <p id="count" class="count">60</p>
+            <div id="wrap" class="wrap">
+                <div class='field'>
+
+                    <div>
+                        <p id="trans" >以下のテストを開始します<br>スタートを押してください</p>
+                        <span id="typed" class="typed"></span>
+                        <span id="untyped"></span>
+                        <h1 id="end"></h1>
+                    </div>
+                        <div class="tables">
+                        <table id="tbl1"  >
+
+                        </table>
+                    </div>
+
+                </div>
+            </div>
         </div>
-        <button id="start">スタート</button>
-        
-        
+        <div class='start'>
+            <button id="start">スタート</button>
+
+        </div>
+
+
+{% endblock %}
+
+        {% block extrajs %}
         <script>
-        let untyped='';
+
+
+
+
+            let untyped='';
             let typed='';
             let score=0;
-            
+
             var textLists;
             var transLists
-            const untypedfield=document.getElementById('untyped');
+            var untypedfield=document.getElementById('untyped');
             const typedfield=document.getElementById('typed');
             const wrap = document.getElementById('wrap');
             const start=document.getElementById('start')
             const count=document.getElementById('count')
             const transfield=document.getElementById('trans');
             const endfield=document.getElementById('end');
+            var select=document.getElementById('select');
+            const tbl=document.getElementById('tbl1');
+            var parentselect=document.getElementById('parentselect');
+            const parentCategoryElement = $('#id_parent_category');
+            const categoryElement = $('#id_category');
+     
 
-            const select=document.getElementById('select');
-            let value=select.value;
-            textLists = [
-            {% for area in postC %}
-            {% with index=forloop.counter0 %}
-            {% if 0 < index%},{% endif %}
-            {% endwith %}
-            "{{area.word}}"
-            {% endfor %}
-            ];  
+        
+        
 
-            transLists = [
-            {% for area in postC %}
-            {% with index=forloop.counter0 %}
-            {% if 0 < index%},{% endif %}
-            {% endwith %}
-            "{{area.trans}}"
-            {% endfor %}
-            ];
             
-            
-            select.addEventListener("change", () => {
-            value=select.value;
-            console.log(value)
-            if(value==2){
-            textLists = [
-            {% for area in postC %}
-            {% with index=forloop.counter0 %}
-            {% if 0 < index%},{% endif %}
-            {% endwith %}
-            "{{area.word}}"
-            {% endfor %}
-            ];  
+            const changeCategory = (select) => {
+                // 子カテゴリの選択欄を空にする
+                categoryElement.children().remove();
+                $.ajax({
+                    url: '{% url 'photo:ajax_get_category' %}',
+                    type: 'GET',
+                    data: {
+                        'pk': parentCategoryElement.val(),
+                    }
+                }).done(response => {
+                    // 子カテゴリの選択肢を作成・追加
+                    for (const category of response.categoryList) {
+                        const option = $('<option>');
+                        option.val(category['pk']);
+                        option.text(category['title']);
+                        categoryElement.append(option);
+                    }
+        
+                    // 指定があれば、そのカテゴリを選択する
+                    if (select !== undefined) {
+                        categoryElement.val(select);
+                    }
+                    printlist();
+                });
+            };
+        
+            parentCategoryElement.on('change', () => {
+                changeCategory();
+                console.log(categoryElement.val());
+            });
 
-            transLists = [
-            {% for area in postC %}
-            {% with index=forloop.counter0 %}
-            {% if 0 < index%},{% endif %}
-            {% endwith %}
-            "{{area.trans}}"
-            {% endfor %}
-            ];
-            }else{
-            textLists = [
-            {% for area in postH %}
-            {% with index=forloop.counter0 %}
-            {% if 0 < index%},{% endif %}
-            {% endwith %}
-            "{{area.word}}"
-            {% endfor %}
-            ];
-            
+            categoryElement.on('change', () => {
+                printlist();
+                console.log('change');
+            });
+            transfield.textContent='以下のテストを開始します';
+            typedfield.textContent='';
+            untypedfield.textContent='スタートを押してください';
+            const printlist=()=>{
+               
+                var category_value=categoryElement.val();
+                var xhr=new XMLHttpRequest();
+                xhr.open('POST','/process/', true);
+                xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+                xhr.onreadystatechange=function(){
+                    if(xhr.readyState === 4 && xhr.status === 200){
+                        var resultDiv=document.getElementById('result');
+                        var responseData=JSON.parse(xhr.responseText);
+                        textLists=responseData.message;
+                        transLists=responseData.message2;
+                        console.log(textLists)
+                        console.log(transLists)
+                        let time=count.textContent; 
+                        let long=textLists.length*15;       
+                        count.textContent=long;
 
-            transLists= [
-            {% for area in postH %}
-            {% with index=forloop.counter0 %}
-            {% if 0 < index%},{% endif %}
-            {% endwith %}
-            "{{area.trans}}"
-            {% endfor %}
-            ];
+                        var table = document.getElementById("tbl1");  // 行の削除
+                        while (table.rows.length > 0) table.deleteRow(0);
+                        for(let i=0; i<textLists.length; i++){
+                            const tbl=document.getElementById('tbl1');
+                            let tr=document.createElement('tr');
+                            let cell=document.createElement('td');
+                            let celltext=document.createTextNode(textLists[i]);
+                            cell.appendChild(celltext);
+                            let cell2=document.createElement('td');
+                            let celltrans=document.createTextNode(transLists[i]);
+                            cell2.appendChild(celltrans);
+                            tr.appendChild(cell);
+                            tr.appendChild(cell2);
+                           tbl.appendChild(tr);
+                        }
+                    }
+                };
+                xhr.send('categorys=' + category_value);
             }
-        });
-          
+        
+
+
+            var counter=0;
             let random;
-            
+
             const createText =()=>{
+               {
+                
                 typed='';
                 typedfield.textContent=typed;
-                
-                console.log(Math.floor(Math.random()*textLists.length));
-                random=(Math.floor(Math.random()*textLists.length));
-                untyped = textLists[random];
+                transfield.textContent=transLists[counter];
+                untyped = textLists[counter];
+                counter++;
                 strHead=untyped.slice(0,1);
                 blank='';
                 for(i = 0; i<untyped.length-1; i++){
                     blank+='□'
                     console.log(blank)
-                }            
+                }
                 untypedfield.textContent=strHead+blank;
-                transfield.textContent=transLists[random];
                 
-            };
-            
-            
+
+            };}
+
+
             const keyPress=e=>{
                 console.log(e.key);
                 if(e.key !==untyped.substring(0,1)){
@@ -163,7 +255,7 @@
                     },100)
                     return;
                 }
-                
+
                 score++;
                 typed+=untyped.substring(0,1);
                 untyped=untyped.substring(1);
@@ -180,62 +272,101 @@
                 }
             };
             const rankCheck=score=>{
-                let text='';
-                if(score<100){
-                    text = `あなたのランクはCです。\nBランクまであと${100 - score}文字です。`;
-                } else if(score < 200) {
-                  text = `あなたのランクはBです。\nAランクまであと${200 - score}文字です。`;    
-                } else if(score < 300) {
-                  text = `あなたのランクはAです。\nSランクまであと${300 - score}文字です。`;    
-                } else if(score >= 300) {
-                  text = `あなたのランクはSです。\nおめでとうございます!`;    
-                }
-                return  `${score}文字打てました!\n${text}\n【OK】リトライ / 【キャンセル】終了`
-                
+                let text='';            
+                return  `時間切れです\n早く打てるように練習しましょう\n【OK】リトライ / 【キャンセル】終了`
+
             };
+
+            const rankCheckClear=score=>{
+                let text='';            
+                return  `制限時間内にすべての単語を打てました\nおめでとうございます\n【OK】リトライ / 【キャンセル】終了`
+
+            };
+
             const gameOver=id=>{
-                
+                counter=0;
                 clearInterval(id);
-               
-                typedfield.textContent=textLists[random];
-                untypedfield.textContent='';
-                endfield.textContent='タイムアップ';
+                var select=document.getElementById('select');
+                categoryElement.css('visibility', 'visible');
+                parentCategoryElement.css('visibility', 'visible');
+                $("label[for='id_parent_category']").css('visibility', 'visible');
+                $("label[for='id_category']").css('visibility', 'visible');
+                
+                transfield.textContent='再テストを開始します';
+                typedfield.textContent='';
+                untypedfield.textContent='スタートを押してください';
+                endfield.textContent='';
                 setTimeout(()=>{
                     const result=confirm(rankCheck(score));
                 if(result==true){
-                    window.location.reload();
+                    start.style.display = '';
+                    start.textContent='再スタート'
+                    printlist();
                     }
-            
+
                 },500)
-               
-                  
-               
-            
-            };
+             };
+
+
+             const gameClear=id=>{
+                counter=0;
+                clearInterval(id);
+                var select=document.getElementById('select');
+                categoryElement.css('visibility', 'visible');
+                parentCategoryElement.css('visibility', 'visible');
+                $("label[for='id_parent_category']").css('visibility', 'visible');
+                $("label[for='id_category']").css('visibility', 'visible');
+                
+                typedfield.textContent='合格です';
+                transfield.textContent='おめでとうございます';
+                untypedfield.textContent='';
+                endfield.textContent='';
+                setTimeout(()=>{
+                    const result=confirm(rankCheckClear(score));
+                if(result==true){
+                    start.style.display = '';
+                    start.textContent='スタート'
+                    printlist();
+                    }
+
+                },500)}
+
+
+
+
             const timer=()=>{
                 let time=count.textContent;
                 const id =setInterval(()=>{
                     time--;
                     count.textContent=time;
-                    if(time<=0){
-                        
+                    if(time<=0 ){
+
                         gameOver(id);
+                    }else if(counter>textLists.length ){
+                        gameClear(id);
                     }
                 },1000);
             };
             start.addEventListener('click',()=>{
                 createText();
                 timer();
+                categoryElement.css('visibility', 'hidden');
+                parentCategoryElement.css('visibility', 'hidden');
+                $("label[for='id_parent_category']").css('visibility', 'hidden');
+                $("label[for='id_category']").css('visibility', 'hidden');
                 start.style.display='none';
+                var table = document.getElementById("tbl1");  // 行の削除
+                        while (table.rows.length > 0) table.deleteRow(0);
+                endfield.textContent='';
+                
                 document.addEventListener('keypress',keyPress);
+                trans.style.display='';
             });
-            untypedfield.textContent='スタートしてください';
-            
-
+            untypedfield.textContent='';
+       
             </script>
-     </div>
 
-{% endblock %}
+            {% endblock %}
 
 <!-- {% for product in object_list %}
 <tr>
