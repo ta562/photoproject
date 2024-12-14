@@ -1,34 +1,78 @@
   <div class="album py-5 bg-light">
     <div class="container">
       <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-	  {% for record in object_list %}
+
         <div class="col">
           <div class="card shadow-sm">
-            <img src="{{ record.image1.url}}"
-		 class="bd-placeholder-img card-img-top" 
-                 width="100%" height="225" 
-                 xmlns="http://www.w3.org/2000/svg" 
-                 role="img" aria-label="Placeholder: Thumbnail" 
-                 preserveAspectRatio="xMidYMid slice" 
-                 focusable="false">
-                 <title>Placeholder</title>
-                 <rect width="100%" height="100%" fill="#55595c"/>
-                 </img>
+            
+		 
+               
             <div class="card-body">
-              <p class="card-text">{{record.title}}</p>
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="btn-group">
-                  <button type="button" class="btn btn-sm btn-outline-secondary" onclick="location.href='{% url 'photo:photo_detail' record.pk %}'">View</button>
-                  <button type="button" class="btn btn-sm btn-outline-secondary" onclick="location.href='{% url 'photo:photos_cat' category=record.category.id %}'">{{record.category.title}}</button>
-                </div>
-                <a href="{% url 'photo:user_list' user=record.user.id %}">
-                <small class="text-muted">{{record.user.username}}</small>
-                </a>
-              </div>
+              <p class="card-title">ss</p>
+              <p class="card-text">ss</p>
+              
             </div>
           </div>
         </div>
-	{% endfor %}
+
         </div>
         </div>
         </div>	
+        
+{% block extrajs %}
+  <script>
+
+  const requestuser=()=>{
+    $.ajax({
+      url:'{% url'photo:ajax_get_mypage' %}',
+      type:'GET',
+      data:{
+        'pk':value,
+      }
+    }).done(response=>{
+      userId=user;
+      
+      categoryList=category;
+      console.log(userId)
+      console.log(categoryList)
+
+    })
+  }
+        const printlist=()=>{
+          console.log('chanf')        
+          var category_value=parentCategoryElement.val();
+          console.log(category_value)  
+          $.ajax({
+              url: '{% url 'photo:ajax_get_printlist' %}',
+              type: 'GET',
+              data: {
+                'pk': category_value,
+                    }
+            }).done(response => {              
+              
+                  textLists=response.message3; 
+                  textId=response.message6;             
+                  console.log(textLists)
+                  var table = document.getElementById("tbl1");  // 行の削除
+                  while (table.rows.length > 0) table.deleteRow(0);
+                  for(let i=0; i<textLists.length; i++){
+                    const tbl=document.getElementById('tbl1');
+                    let tr=document.createElement('tr');
+                    let check=document.createElement('input');
+                    check.setAttribute('type','checkbox');
+                    check.setAttribute('value',textId[i]);
+                    let cell=document.createElement('td');
+                    cell.appendChild(check);
+                    tr.appendChild(cell);
+                    let td=document.createElement('td');
+                    let celltext=document.createTextNode(textLists[i]);
+                    td.appendChild(celltext);
+                    tr.appendChild(td);
+                    tbl.appendChild(tr);
+                  }
+              });
+            };
+
+  </script>
+
+{% endblock %}

@@ -24,11 +24,27 @@ class Category(models.Model):
     
     def __str__(self):
         return self.title
+class Students(models.Model):
+    name=models.CharField(
+        verbose_name='名前',
+        max_length=200
+        
 
-class EnglishScore(models.Model):
+         )
+    student_id=models.CharField(verbose_name='生徒ID',max_length=200
+        
+
+         )
     user=models.ForeignKey(
         CustomUser,
         verbose_name='ユーザー',
+        on_delete=models.CASCADE
+        )   
+
+class EnglishScore(models.Model):
+    student=models.ForeignKey(
+        Students,
+        verbose_name='生徒',
         on_delete=models.CASCADE
         )
     
@@ -39,8 +55,6 @@ class EnglishScore(models.Model):
         on_delete=models.PROTECT
         )
     
-    def __str__(self):
-        return self.user
 
 
 class EnglishWords(models.Model):

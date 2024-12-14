@@ -12,24 +12,19 @@ form{
     text-align: center;
 }
 
-.count {
+.count{
     margin: 0;
     font-weight: bold;
-    color: #5c5e82;
+    color:  #5c5e82;
+
 }
 
-.limit,.tani{
-    margin: 0;
-    font-weight: bold;
-    color: #5c5e82;
-    font-size: 3rem
-}
 .wrap{
     margin-top: 20px;
     padding: 20px 40px;
     background-color: #ffebd4;
     font-weight: bold;
-    color: #5c5e82;
+    color:  #5c5e82;
 }
 
 .start{
@@ -69,7 +64,6 @@ table{ margin: auto;
     padding: 10px;
     border-bottom: solid 1px #d4d6d6;
   }
-
   .btnstart {
 	display: block;
 	text-align: center;
@@ -87,66 +81,13 @@ table{ margin: auto;
 	box-shadow: 0 3px 2px 1px #fcfcfc, 0 4px 6px #cecfd1, 0 -2px 2px #cecfd1, 0 -4px 2px #eee, inset 0 0 2px 2px #cecfd1;
 	transition: 0.5s;
 }
+.limit,.tani{
+    margin: 0;
+    font-weight: bold;
+    color: #5c5e82;
+    font-size: 3rem
+}
 
-.form{ 
-    color: #5c5e82;
-      font-size: 2rem;
-     
-      text-align-last: center;
-     }
-  
-  .selectbox-2 {
-    position: relative;
-    margin-left:20px;
-  }
-  
-  .selectbox-2::before,
-  .selectbox-2::after {
-    position: absolute;
-    content: '';
-    pointer-events: none;
-  }
-  
-  .selectbox-2::before {
-    right: 0;
-    display: inline-block;
-    width: 2.8em;
-    height: 2em;
-    border-radius: 0 3px 3px 0;
-    background-color: #faa63e;
-    content: '';
-  }
-  
-  .selectbox-2::after {
-    position: absolute;
-    top: 50%;
-    right: 1.4em;
-    transform: translate(50%, -50%) rotate(45deg);
-    width: 6px;
-    height: 6px;
-    border-bottom: 3px solid #fff;
-    border-right: 3px solid #fff;
-    content: '';
-  }
-  
-  .selectbox-2 select {
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    min-width: 230px;
-    height: 2em;
-    padding: 0.1em 4em .4em .8em;
-    border: 2px solid #faa63e;
-    border-radius: 3px;
-    color: #5c5e82;
-    font-size: 1em;
-    cursor: pointer;
-  }
-  
-  .selectbox-2 select:focus {
-    outline: 1px solid #f2d673;
-  }
-  
 {% comment %}
   .field {
     display: flex;
@@ -163,22 +104,16 @@ table{ margin: auto;
         <meta charset="utf-8">
         <meta name="description" content="簡易的なタイピング">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <h2 id='id_name'></h2><div class='form'>
-        
-        <label for="id_parent"class='selectbox-2'>教材:
-        <select name="parent_category" id="id_parent">
-        <option value="" selected>---------</option>
-        </select></label>
-        <label for="id_category" class='selectbox-2'>カテゴリ:
-        <select name="parent_category" id="id_category">
-        <option value="" selected>---------</option>
-        </select></label>
-        </div>
+        {% include "photos_title.html"%}
+        <form action="" method="POST">
+            {{ form.as_p }}
+        </form>
+
         <div class='typing'>
             <list class="limit" id='limit'>目標時間</list>
             <list id="count" class="count">60</list>
             <list class="tani">秒</list>
-            
+          
             <div id="wrap" class="wrap">
                 <div class='field'>
 
@@ -196,11 +131,21 @@ table{ margin: auto;
 
                 </div>
             </div>
-        </div>
-        <div class='start'>
-            <button id="start" class="btnstart">スタート Enter↲ </button>
+        </div>  <div class='start'>
+            <button id="start" class="btnstart">スタート Enter↲</button>
 
         </div>
+     <br>
+     <br>
+     <br>
+     <br>
+     <br>
+     <br>
+     <br>
+     <br>
+     <br>
+     <br>
+     
 
 
 {% endblock %}
@@ -221,94 +166,61 @@ table{ margin: auto;
             const typedfield=document.getElementById('typed');
             const wrap = document.getElementById('wrap');
             const start=document.getElementById('start')
-            const limit=document.getElementById('limit')
             const count=document.getElementById('count')
             const transfield=document.getElementById('trans');
             const endfield=document.getElementById('end');
             var select=document.getElementById('select');
             const tbl=document.getElementById('tbl1');
             var parentselect=document.getElementById('parentselect');
-           
-            
-     
-            const studentnameElement = $('#id_name');
-            const parentCategoryElement = $('#id_parent');
+            const parentCategoryElement = $('#id_parent_category');
             const categoryElement = $('#id_category');
-            const wordvalueElement = $('#wordvalue');  
-            const transvalueElement = $('#transvalue');  
-            
-            const printselect=()=>{
-              console.log('chans')        
-              var category_value=1;
-              console.log(category_value)  
-              $.ajax({
-                  url: '{% url 'photo:ajax_get_printlist' %}',
-                  type: 'GET',
-                  data: {
-                    'pk': category_value,
-                        }
-                }).done(response => {              
-                  
-                      var textLists=response.message4; 
-                      textId=response.message5;             
-                      console.log(textLists)
-                     
-                      for(let i=0; i<textLists.length; i++){
-                        const select=document.getElementById('id_parent');
-                        let option=document.createElement('option');
-                        option.text=textLists[i];
-                        option.value=textId[i];
-                       
-                        select.appendChild(option);
-                      }
-                  });
-                };
-                studentnameElement.text('ID'+'{{pk}}'+' : '+'{{name}}'+'くん');
+            const limit=document.getElementById('limit')
+     
 
-                const changeCategory = (select) => {
-                    categoryElement.children().remove();
-                    $.ajax({
-                        url: '{% url 'photo:ajax_get_printlist' %}',
-                        type: 'GET',
-                        data: {
-                            'pk': parentCategoryElement.val(),
-                        }
-                    }).done(response => {
-                      var textLists=response.message3; 
-                      textId=response.message6;             
-                      console.log(textLists)
-                      for(let i=0; i<textLists.length; i++){
-                        const select=document.getElementById('id_category');
-                        let option=document.createElement('option');
-                        option.text=textLists[i];
-                        option.value=textId[i];
-                       
-                        select.appendChild(option);
-                      }
-                        printlist();
-                    });
-                };
         
-                parentCategoryElement.on('change', () => {
-                    changeCategory();
-                    console.log('change');
-                });
-
-                printselect();
-                parentCategoryElement.on("change",()=>{
-                    printlist();
-                })
-
-                categoryElement.on("change",()=>{
-                    printlist();
-                })
-            transfield.textContent='以下のテストを開始します';
-            typedfield.textContent='';
-            untypedfield.textContent='スタートを押してください';
+        
 
             
+            const changeCategory = (select) => {
+                // 子カテゴリの選択欄を空にする
+                categoryElement.children().remove();
+                $.ajax({
+                    url: '{% url 'photo:ajax_get_category' %}',
+                    type: 'GET',
+                    data: {
+                        'pk': parentCategoryElement.val(),
+                    }
+                }).done(response => {
+                    // 子カテゴリの選択肢を作成・追加
+                    for (const category of response.categoryList) {
+                        const option = $('<option>');
+                        option.val(category['pk']);
+                        option.text(category['title']);
+                        categoryElement.append(option);
+                    }
+        
+                    // 指定があれば、そのカテゴリを選択する
+                    if (select !== undefined) {
+                        categoryElement.val(select);
+                    }
+                    printlist();
+                });
+            };
+        
+            parentCategoryElement.on('change', () => {
+                changeCategory();
+                console.log(categoryElement.val());
+            });
 
+            categoryElement.on('change', () => {
+                printlist();
+                console.log('change');
+            });
+            transfield.textContent='タイピングの練習を開始します';
+            typedfield.textContent='';
+            untypedfield.textContent='';
             const printlist=()=>{
+               
                 var category_value=categoryElement.val();
                 var xhr=new XMLHttpRequest();
                 xhr.open('POST','/process/', true);
@@ -326,7 +238,7 @@ table{ margin: auto;
                         for(i=0;i<textLists.length;i++){
                             wordcount+=textLists[i].length;
                             }
-                        let long=wordcount*2;       
+                        let long=wordcount*5;       
                         count.textContent=long;
 
                         var table = document.getElementById("tbl1");  // 行の削除
@@ -348,33 +260,11 @@ table{ margin: auto;
                 };
                 xhr.send('categorys=' + category_value);
             }
-            mistypetransLists=[];
-            mistypetextLists=[];
+        
 
-            const printmistypelist=()=>{
-                const tbl=document.getElementById('tbl1');
-                let tr=document.createElement('tr');
-                let cell=document.createElement('td');
-                let celltext=document.createTextNode(textLists[counter]);
-                cell.appendChild(celltext);
-                tr.appendChild(cell);
-                let cell2=document.createElement('td');
-                let celltrans=document.createTextNode(transLists[counter]);
-                cell2.appendChild(celltrans);
-                tr.appendChild(cell2);
-                tbl.appendChild(tr);
-                
-                mistypetextLists.push(textLists[counter]);
-                mistypetransLists.push(transLists[counter]);
-                
-                gameinfo=1;
-            }
 
             var counter=0;
             let random;
-
-
- 
 
             const createText =()=>{
                {
@@ -383,7 +273,7 @@ table{ margin: auto;
                 typedfield.textContent=typed;
                 transfield.textContent=transLists[counter];
                 untyped = textLists[counter];
-                
+                counter++;
                 strHead=untyped.slice(0,1);
                 blank='';
                 for(i = 0; i<untyped.length-1; i++){
@@ -403,10 +293,6 @@ table{ margin: auto;
                     setTimeout(()=>{
                         wrap.classList.remove('mistyped')
                     },100)
-                    printmistypelist();
-                    counter++;
-                    createText();
-                    
                     return;
                 }
 
@@ -422,7 +308,6 @@ table{ margin: auto;
                 }
                 untypedfield.textContent=blank;
                 if(untyped===''){
-                    counter++;
                     createText()
                 }
             };
@@ -442,65 +327,49 @@ table{ margin: auto;
                 counter=0;
                 gamestate=0;
                 clearInterval(id);
+                var select=document.getElementById('select');
+                categoryElement.css('visibility', 'visible');
+                parentCategoryElement.css('visibility', 'visible');
+                $("label[for='id_parent_category']").css('visibility', 'visible');
+                $("label[for='id_category']").css('visibility', 'visible');
                 
-                
-                transfield.textContent='時間切れです';
+                transfield.textContent='再テストを開始します';
                 typedfield.textContent='';
-                untypedfield.textContent='初めからやり直してください';
+                untypedfield.textContent='スタートを押してください';
                 endfield.textContent='';
-              
+               
                     start.style.display = '';
-                    limit.style.display = '';
-                    start.textContent='再スタート Enter↲ '
+                    limit.style.display='';
+                    start.textContent='再スタート Enter↲'
                     printlist();
-                
+                 
              };
 
 
              const gameClear=id=>{
                 counter=0;
                 gamestate=0;
-               
-                if(gameinfo==0){
-                    clearInterval(id);
+                clearInterval(id);
                 var select=document.getElementById('select');
                 categoryElement.css('visibility', 'visible');
                 parentCategoryElement.css('visibility', 'visible');
                 $("label[for='id_parent_category']").css('visibility', 'visible');
                 $("label[for='id_category']").css('visibility', 'visible');
-                scoreSave();
-                typedfield.textContent='合格です';
-                transfield.textContent='おめでとうございます';
+                
+                typedfield.textContent='終了';
+                transfield.textContent='よく頑張りました';
                 untypedfield.textContent='';
                 endfield.textContent='';
-                start.style.display = '';
-                limit.style.display = '';
-                start.textContent='スタート Enter↲ '
-                printlist();
-            }else{
-                typedfield.textContent='';
-                transfield.textContent='間違えた単語があります';
-                untypedfield.textContent='よく確認してから再スタートしてください';
-                endfield.textContent='';
-                start.style.display = '';
-                limit.style.display = '';
-                    start.textContent='再スタートEnter↲  '
-            }
-            }
-
-            const scoreSave = (select) => {
                 
-                $.ajax({
-                    url: '{% url 'photo:ajax_get_saveuserscore' %}',
-                    type: 'GET',
-                    data: {
-                        'category': categoryElement.val(),
+                    start.style.display = '';
+                    limit.style.display='';
+                    start.textContent='スタート Enter↲'
+                    printlist();
                     }
-                }).done(response => {
-                    // 子カテゴリの選択肢を作成・追加
-                   console.log(response);
-                });
-            };
+
+              
+
+
 
 
             const timer=()=>{
@@ -511,48 +380,20 @@ table{ margin: auto;
                     if(time<=0 ){
 
                         gameOver(id);
-                    }else if(counter==textLists.length ){
-                        if(mistypetextLists.length==0){
-                            gameinfo=0;
-                        }
+                    }else if(counter>textLists.length ){
                         gameClear(id);
                     }
                 },1000);
             };
-            var gamestate=0;
-            var gameinfo=0;
+
+            gamestate=0;
             const startgame=()=>{
-                if(gameinfo==1){
-                    textLists=mistypetextLists;
-                    transLists=mistypetransLists;
-                    mistypetextLists=[];
-                    mistypetransLists=[];
-                    let time=count.textContent; 
-                    var wordcount=0;
-                    for(i=0;i<textLists.length;i++){
-                        wordcount+=textLists[i].length;
-                        }
-                    
-                        createText();
-                        categoryElement.css('visibility', 'hidden');
-                        parentCategoryElement.css('visibility', 'hidden');
-                        $("label[for='id_parent_category']").css('visibility', 'hidden');
-                        $("label[for='id_category']").css('visibility', 'hidden');
-                        start.style.display='none';
-                        limit.style.display='none';
-                        var table = document.getElementById("tbl1");  // 行の削除
-                                while (table.rows.length > 0) table.deleteRow(0);
-                        endfield.textContent='';
-                        
-                        document.addEventListener('keypress',keyPress);
-                        trans.style.display='';
-                        gamestate=1;
-                }else{
+                gamestate=1;
                 createText();
                 timer();
                 categoryElement.css('visibility', 'hidden');
                 parentCategoryElement.css('visibility', 'hidden');
-                $("label[for='id_parent']").css('visibility', 'hidden');
+                $("label[for='id_parent_category']").css('visibility', 'hidden');
                 $("label[for='id_category']").css('visibility', 'hidden');
                 start.style.display='none';
                 limit.style.display='none';
@@ -562,11 +403,12 @@ table{ margin: auto;
                 
                 document.addEventListener('keypress',keyPress);
                 trans.style.display='';
-                gamestate=1;
-                }
             };
             untypedfield.textContent='';
-    
+       
+
+
+
             start.addEventListener('click',()=>{
                 startgame();
             });
@@ -580,6 +422,7 @@ table{ margin: auto;
                 }
                 }
             }
+
             </script>
 
             {% endblock %}

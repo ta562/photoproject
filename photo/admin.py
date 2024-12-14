@@ -18,8 +18,8 @@ class EnglishWordsAdmin(admin.ModelAdmin):
     list_display_links=('id','word')
 
 class EnglishScoreAdmin(admin.ModelAdmin):
-    list_display=('id','user')
-    list_display_links=('id','user')
+    list_display=('id','category')
+    list_display_links=('id','category')
 admin.site.register(ParentCategory,ParentCategoryAdmin)
 admin.site.register(Category,CategoryAdmin)
 admin.site.register(PhotoPost,PhotoPostAdmin)

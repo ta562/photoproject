@@ -6,13 +6,74 @@
         <div style="text-align:center">
         <h4>{{user.username}}さんのマイページ</h4>
         {% if object_list.count == 0 %}
-            <p>{{user.username}}さんの投稿はありません</p>
+            <p>{{user.username}}さんの記録はありません</p>
         {% else %}
             <p>投稿<strong>{{object_list.count}}</strong>件</p>
         {% endif %}
-        <a href="{% url 'photo:post' %}">投稿する</a>
+        <a href="{% url 'photo:typing' %}">テストする</a>
         </div>
     {% endif %}
-    {% include "photos_list.html" %}
+    <div class="album py-5 bg-light">
+        <div class="container">
+          <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+    
+            <div class="col">
+              <div class="card shadow-sm">
+                
+             
+                   
+                <div class="card-body">
+                  <p class="card-title">ss</p>
+                  <p class="card-text">ss</p>
+                  
+                </div>
+              </div>
+            </div>
+    
+            </div>
+            </div>
+            </div>	
     {% include "pagination.html" %}
     {% endblock %}
+
+           
+{% block extrajs %}
+<script>
+    
+    const requestuser=()=>{
+        value=1;
+ 
+        $.ajax({
+            url: '{% url 'photo:ajax_get_mypagelist' %}',
+            type: 'GET',
+            data: {
+              'pk': value,
+                  }
+          }).done(response => {   
+        userId=response.user;
+        
+        categoryList=response.category;
+        console.log(userId)
+        console.log(categoryList)
+        printlist();
+      })
+    }
+    requestuser();
+      const printlist=()=>{
+        for(let i=0; i<categoryList.length; i++){
+            $.ajax({
+                url: '{% url 'photo:ajax_get_mypageparentlist' %}',
+                type: 'GET',
+                data: {
+                  'pk': categoryList[i],
+                      }
+              }).done(response => {
+                parentList=response.parent;
+                console.log(parentList)
+              }
+              )
+          }
+        };
+
+</script>
+{% endblock %}

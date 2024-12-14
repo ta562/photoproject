@@ -1,0 +1,208 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}ENtyping {% endblock %}
+{% block contents %}
+<style>
+    form{
+        font-size: 2em;
+        text-align: center;
+    }
+    .table{ 
+
+      font-size: 1rem;
+        width: 500px;
+     text-align: center;
+     border-collapse: collapse;
+     border-spacing: 0;
+      }
+    p{
+      margin: 10px;
+    }
+    
+    
+    
+      table th{
+        padding: 10px;
+        border-bottom: solid 4px #d4d6d6;
+        color: #778ca3
+      }
+    
+      table td{
+        padding: 10px;
+        border-bottom: solid 1px #d4d6d6;
+      }
+</style>
+
+<h1>生徒登録・削除</h1>
+<div>
+  <label for="id_user">教室:
+    <select name="parent_category" id="id_user">
+    </select>
+</label></div>
+<list>
+  <label for='studentname'>名前:
+  <input type="text" name="title" maxlength="200" id="studentname"></label>
+
+  <label for='studentid'>生徒ID:</label>
+  <input type="text" name="title" maxlength="200" id="studentid">
+</list>
+
+<list>
+  <button id='savestudent'>登録</button><!-- 新規と編集で表示を変更 -->
+</list>
+
+<div class="actions">
+  
+    
+  <label>操作: <select id="action" required>
+<option value="" selected>---------</option>
+
+<option value="delete_selected">選択された students の削除</option>
+
+</select></label><input type="hidden" name="select_across" value="0" class="select-across"> 
+  <button  id="deletebutton" title="選択された操作を実行" name="index" value="0">実行</button>
+
+      
+  
+  
+
+</div> 
+<div class="tables">
+    <table id="tbl1" class="table" >
+
+    </table>
+  {% endblock %}
+  {% block extrajs %}
+  <script>
+    const printselect=()=>{
+      console.log('chans')        
+      var category_value=1;
+      console.log(category_value)  
+      $.ajax({
+          url: '{% url 'accounts:ajax_get_userlist' %}',
+          type: 'GET',
+          data: {
+            'pk': category_value,
+                }
+        }).done(response => {              
+          
+              var textLists=response.userlist; 
+              textId=response.useridlist;             
+              console.log(textLists)
+             
+              for(let i=0; i<textLists.length; i++){
+                const select=document.getElementById('id_user');
+                let option=document.createElement('option');
+                option.text=textLists[i];
+                option.value=textId[i];
+               
+                select.appendChild(option);
+              }
+          });
+        };
+        printselect();
+
+    const printlist=()=>{
+      console.log('chanf')        
+      var category_value=parentCategoryElement.val();
+      console.log(category_value);
+      $.ajax({
+        url: '{% url 'photo:ajax_get_studentslist' %}',
+        type: 'GET',
+        data: {
+          'pk': category_value,
+              }
+      }).done(response => {
+        textId=response.student_id
+        textLists=response.student_name;
+        var table = document.getElementById("tbl1");  // 行の削除
+        while (table.rows.length > 0) table.deleteRow(0);
+        for(let i=0; i<textLists.length; i++){
+          const tbl=document.getElementById('tbl1');
+          let tr=document.createElement('tr');
+          let check=document.createElement('input');
+          check.setAttribute('type','checkbox');
+          check.setAttribute('value',textId[i]);
+          let cell=document.createElement('td');
+          cell.appendChild(check);
+          tr.appendChild(cell);
+          let td2=document.createElement('td');
+          let celltext2=document.createTextNode(textId[i]);
+          td2.appendChild(celltext2);
+          tr.appendChild(td2);
+          let td=document.createElement('td');
+          let celltext=document.createTextNode(textLists[i]);
+          td.appendChild(celltext);
+          tr.appendChild(td);
+          tbl.appendChild(tr);
+        }
+      });
+    };
+    const parentCategoryElement = $('#id_user');
+    printlist();
+    parentCategoryElement.on("change",()=>{
+      printlist();
+  })
+    const saveStudentElement = $('#savestudent');
+    const studentIdElement = $('#studentid');  
+    const studentNameElement = $('#studentname')  
+    const deletebuttonElement = $('#deletebutton');  
+    const actionElement=$('#action');
+
+    //削除
+  $('#deletebutton').on('click',function(){
+      if(actionElement.val()=='delete_selected'){
+       
+        console.log('gf');
+        $('input:checked').each(function() {
+          var r = $(this).val();
+          
+          console.log(r);
+          $.ajax({
+            url: '{% url 'photo:ajax_get_deletestudents' %}',
+            type: 'GET',
+            data: {'student_id': r}
+          }).done(response => {
+            console.log('delete');
+            printlist();
+          });
+      })
+        
+      }
+      
+      
+    })
+    //保存
+    $('#savestudent').on('click',function(){
+      if(checkkaraMoji(studentIdElement.val())==false){
+        return false;
+      }else{
+        console.log(studentIdElement.val())
+        $.ajax({
+          url: '{% url 'photo:ajax_get_createstudent' %}',
+          type: 'GET',
+          data: {'student_id': studentIdElement.val(),'student_name':studentNameElement.val(),'user_id':parentCategoryElement.val()}
+        }).done(response => {
+          console.log('save');
+          printlist();
+          $('#studentid').val("");  
+          $('#studentname').val("");  
+        });
+      }
+    });
+      
+    const checkkaraMoji=(checkStr)=>{
+      if(!checkStr){
+        console.log('空文');
+        alert('空欄です')
+        return false;
+      }else{
+        console.log('文字列');
+      }
+    }
+
+
+          
+</script>
+
+{% endblock %}

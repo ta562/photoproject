@@ -1,0 +1,233 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}ENtyping {% endblock %}
+{% block contents %}
+<style>
+    .typing{
+    font-size: 4em;
+    text-align: center;
+}
+form{
+    font-size: 2em;
+    text-align: center;
+}
+
+.count {
+    margin: 0;
+    font-weight: bold;
+    color: #5c5e82;
+}
+
+
+.limit,.tani{
+    margin: 0;
+    font-weight: bold;
+    color: #5c5e82;
+    font-size: 3rem
+}
+.wrap{
+    margin-top: 20px;
+    padding: 20px 40px;
+    background-color: #ffebd4;
+    font-weight: bold;
+    color: #5c5e82;
+}
+
+.start{
+    font-size: 4em;
+    text-align: center;
+    margin: 20px
+}
+.typed{
+    color: lightgreen;
+}
+
+.mistyped{
+    background-color: #ed958a;
+}
+.tables{
+    text-align: center;
+}
+
+table{ margin: auto;
+
+    font-size: 2rem;
+    width: 50%;
+ text-align: center;
+ border-collapse: collapse;
+ border-spacing: 0;
+  }
+
+
+
+  table th{
+    padding: 10px;
+    border-bottom: solid 4px #d4d6d6;
+    color: #778ca3
+  }
+
+  table td{
+    padding: 10px;
+    border-bottom: solid 1px #d4d6d6;
+  }
+
+  .btnstart {
+	display: block;
+	text-align: center;
+	vertical-align: middle;
+	text-decoration: none;
+	font-size:3rem;
+	margin: auto;
+	padding: 1rem 4rem;
+	font-weight: bold;
+	background-image: linear-gradient(to top, #D8D9DB 0%, #fff 80%, #FDFDFD 100%);
+	border-radius: 100vh;
+	color: #333;
+	border: 1px solid #999;
+	text-shadow: 0 1px #fff;
+	box-shadow: 0 3px 2px 1px #fcfcfc, 0 4px 6px #cecfd1, 0 -2px 2px #cecfd1, 0 -4px 2px #eee, inset 0 0 2px 2px #cecfd1;
+	transition: 0.5s;
+
+ 
+}
+
+.form{ 
+  color: #5c5e82;
+    font-size: 2rem;
+    margin: auto;
+    text-align-last: center;
+    margin-top: 28px}
+
+.selectbox-2 {
+  position: relative;
+}
+
+.selectbox-2::before,
+.selectbox-2::after {
+  position: absolute;
+  content: '';
+  pointer-events: none;
+}
+
+.selectbox-2::before {
+  right: 0;
+  display: inline-block;
+  width: 2.8em;
+  height: 2.8em;
+  border-radius: 0 3px 3px 0;
+  background-color: #faa63e;
+  content: '';
+}
+
+.selectbox-2::after {
+  position: absolute;
+  top: 50%;
+  right: 1.4em;
+  transform: translate(50%, -50%) rotate(45deg);
+  width: 6px;
+  height: 6px;
+  border-bottom: 3px solid #fff;
+  border-right: 3px solid #fff;
+  content: '';
+}
+
+.selectbox-2 select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  min-width: 230px;
+  height: 2.8em;
+  padding: .4em 3.6em .4em .8em;
+  border: 2px solid #faa63e;
+  border-radius: 3px;
+  color: #5c5e82;
+  font-size: 1em;
+  cursor: pointer;
+}
+
+.selectbox-2 select:focus {
+  outline: 1px solid #f2d673;
+}
+
+
+</style>
+
+  <meta charset="utf-8">
+  <meta name="description" content="簡易的なタイピング">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <div class='form'>
+  <label for="id_student" class="selectbox-2">生徒選択:
+    <select name="parent_category" id="id_student" ></select>
+  </label>
+</div>
+  <div class="tables">
+    <table id="tbl1"  ></table>
+  </div>
+  <div class='start'>
+    <button id="start" class="btnstart">決定 </button>
+  </div>
+
+
+{% endblock %}
+
+        {% block extrajs %}
+        <script>
+            const start=document.getElementById('start')
+            const printlist=()=>{
+                console.log('chanf')        
+                var category_value=1;
+                console.log(category_value);
+                $.ajax({
+                  url: '{% url 'photo:ajax_get_studentslist' %}',
+                  type: 'GET',
+                  data: {
+                    'pk': category_value,
+                        }
+                }).done(response => {
+                  textId=response.student_id
+                  textLists=response.student_name;
+                  
+                              
+                  console.log(textLists)
+                 
+                  for(let i=0; i<textLists.length; i++){
+                    const select=document.getElementById('id_student');
+                    let option=document.createElement('option');
+                    option.text=textId[i]+' : '+textLists[i];
+                    option.value=textId[i];
+                   
+                    select.appendChild(option);
+                  }
+                });
+              };
+
+ printlist();
+
+         
+
+              start.addEventListener('click',function(){
+                pk=pkElement.val()
+                console.log(pk);
+                window.location.replace("{% url 'photo:typing' 123456 %}".replace(/123456/,pk));
+
+              },false);
+        
+         
+
+         const pkElement = $('#id_student');    
+         
+         pkElement.on("change",()=>{
+         pk=pkElement.val()
+         console.log(pk);
+        })
+            </script>
+
+            {% endblock %}
+
+<!-- {% for product in object_list %}
+<tr>
+<td>{{ product.word }}</td>
+<td>{{ product.trans }} 円</td>
+</tr>
+{% endfor %} -->
