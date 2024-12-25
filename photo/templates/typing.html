@@ -48,13 +48,13 @@ form{
     text-align: center;
 }
 
-table{ margin: auto;
-
-    font-size: 2rem;
+table{
+    margin: auto;
+    font-size: 1rem;
     width: 50%;
- text-align: center;
- border-collapse: collapse;
- border-spacing: 0;
+    text-align: center;
+    border-collapse: collapse;
+    border-spacing: 0;
   }
 
 
@@ -146,7 +146,24 @@ table{ margin: auto;
   .selectbox-2 select:focus {
     outline: 1px solid #f2d673;
   }
-  
+  .field {
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+    }
+  .btn-custom{
+    background-color: #faa63e;
+    color: white;
+  }
+  .btn-custom:hover {
+    background-color: #faa80e;
+    color: #ffffff;
+  }
+  #id_name{
+    color: #5c5e82;
+  }
 {% comment %}
   .field {
     display: flex;
@@ -163,8 +180,15 @@ table{ margin: auto;
         <meta charset="utf-8">
         <meta name="description" content="簡易的なタイピング">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <h2 id='id_name'></h2><div class='form'>
+        <div class='field'>
+        <h2 id='id_name' class='m-3'></h2> 
         
+        <button id='mypagelink' class="btn btn-custom m-3">成績を確認する</button>
+        
+        </div>
+        <div class=" py-5 bg-white">
+        <div class='form'>
+             
         <label for="id_parent"class='selectbox-2'>教材:
         <select name="parent_category" id="id_parent">
         <option value="" selected>---------</option>
@@ -178,12 +202,15 @@ table{ margin: auto;
             <list class="limit" id='limit'>目標時間</list>
             <list id="count" class="count">60</list>
             <list class="tani">秒</list>
-            
+            <div class='start'>
+            <button id="start" class="btnstart">スタート Enter↲ </button>
+
+        </div>
             <div id="wrap" class="wrap">
-                <div class='field'>
+               
 
                     <div>
-                        <p id="trans" >以下のテストを開始します<br>スタートを押してください</p>
+                        <p id="trans" ></p>
                         <span id="typed" class="typed"></span>
                         <span id="untyped"></span>
                         <h1 id="end"></h1>
@@ -194,13 +221,10 @@ table{ margin: auto;
                         </table>
                     </div>
 
-                </div>
+               
             </div>
         </div>
-        <div class='start'>
-            <button id="start" class="btnstart">スタート Enter↲ </button>
-
-        </div>
+    </div>
 
 
 {% endblock %}
@@ -228,15 +252,25 @@ table{ margin: auto;
             var select=document.getElementById('select');
             const tbl=document.getElementById('tbl1');
             var parentselect=document.getElementById('parentselect');
-           
-            
-     
             const studentnameElement = $('#id_name');
             const parentCategoryElement = $('#id_parent');
             const categoryElement = $('#id_category');
             const wordvalueElement = $('#wordvalue');  
             const transvalueElement = $('#transvalue');  
+            const mypagelink = $('#mypagelink')
             
+            
+            studentnameElement.text('ID'+'{{pk}}'+' : '+'{{name}}'+'くん テスト');
+            studentnameElement.val('{{pk}}');
+            mypagelink.click(function(){
+                pk=studentnameElement.val()
+                console.log(pk);
+                window.location.assign("{% url 'photo:score' 123456 %}".replace(/123456/,pk));
+
+              });
+           
+
+
             const printselect=()=>{
               console.log('chans')        
               var category_value=1;
@@ -263,7 +297,7 @@ table{ margin: auto;
                       }
                   });
                 };
-                studentnameElement.text('ID'+'{{pk}}'+' : '+'{{name}}'+'くん');
+               
 
                 const changeCategory = (select) => {
                     categoryElement.children().remove();
@@ -302,7 +336,7 @@ table{ margin: auto;
                 categoryElement.on("change",()=>{
                     printlist();
                 })
-            transfield.textContent='以下のテストを開始します';
+            
             typedfield.textContent='';
             untypedfield.textContent='スタートを押してください';
 
@@ -326,7 +360,7 @@ table{ margin: auto;
                         for(i=0;i<textLists.length;i++){
                             wordcount+=textLists[i].length;
                             }
-                        let long=wordcount*2;       
+                        let long=wordcount*1;       
                         count.textContent=long;
 
                         var table = document.getElementById("tbl1");  // 行の削除
@@ -372,8 +406,7 @@ table{ margin: auto;
 
             var counter=0;
             let random;
-
-
+         
  
 
             const createText =()=>{
@@ -387,7 +420,7 @@ table{ margin: auto;
                 strHead=untyped.slice(0,1);
                 blank='';
                 for(i = 0; i<untyped.length-1; i++){
-                    blank+='〇'
+                    blank+='_'
                     console.log(blank)
                 }
                 untypedfield.textContent=strHead+blank;
@@ -395,6 +428,7 @@ table{ margin: auto;
 
             };}
 
+        
 
             const keyPress=e=>{
                 console.log(e.key);
@@ -417,12 +451,13 @@ table{ margin: auto;
                 console.log(untyped.length)
                 blank='';
                 for(i = 0; i<untyped.length; i++){
-                    blank+='〇'
+                    blank+='_'
                     console.log(blank)
                 }
                 untypedfield.textContent=blank;
                 if(untyped===''){
                     counter++;
+                    
                     createText()
                 }
             };
@@ -463,14 +498,15 @@ table{ margin: auto;
                
                 if(gameinfo==0){
                     clearInterval(id);
+                $('.field').show();
                 var select=document.getElementById('select');
                 categoryElement.css('visibility', 'visible');
                 parentCategoryElement.css('visibility', 'visible');
                 $("label[for='id_parent_category']").css('visibility', 'visible');
                 $("label[for='id_category']").css('visibility', 'visible');
                 scoreSave();
-                typedfield.textContent='合格です';
-                transfield.textContent='おめでとうございます';
+                typedfield.textContent='合格おめでとう！';
+                
                 untypedfield.textContent='';
                 endfield.textContent='';
                 start.style.display = '';
@@ -488,13 +524,14 @@ table{ margin: auto;
             }
             }
 
-            const scoreSave = (select) => {
+            const scoreSave = () => {
                 
                 $.ajax({
                     url: '{% url 'photo:ajax_get_saveuserscore' %}',
                     type: 'GET',
                     data: {
                         'category': categoryElement.val(),
+                        'pk': studentnameElement.val(),
                     }
                 }).done(response => {
                     // 子カテゴリの選択肢を作成・追加
@@ -550,6 +587,7 @@ table{ margin: auto;
                 }else{
                 createText();
                 timer();
+                $('.field').hide();
                 categoryElement.css('visibility', 'hidden');
                 parentCategoryElement.css('visibility', 'hidden');
                 $("label[for='id_parent']").css('visibility', 'hidden');

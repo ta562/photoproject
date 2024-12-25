@@ -4,8 +4,7 @@
 {% block contents %}
 <style>
     form{
-        font-size: 2em;
-        text-align: center;
+     
     }
 
     .table{ 
@@ -50,6 +49,7 @@
     </list>
     
   </p>
+
   <label for="id_parent">親カテゴリ:</label>
   <select name="parent_category" id="id_parent">
   <option value="" selected>---------</option>
@@ -59,10 +59,15 @@
   <option value="" selected>---------</option>
   </select>
   <br> <block>
-  <p>
+    <form name="myform" class='m-1'>
+
+    <input name="myfile" type="file" />
+
+</form>
     <select id="action" >
     <option value="" selected>---------</option>
     <option value="delete_selected">選択された parent categorys の削除</option>
+    <option value="delete_all">全て削除</option>
   </select>
 </label><input type="hidden" name="select_across" value="0" class="select-across"> 
   <button  id="deletebutton" title="選択された操作を実行" name="index" value="0">実行</button>
@@ -79,10 +84,47 @@
     const wordvalueElement = $('#wordvalue');  
     const transvalueElement = $('#transvalue');  
     const actionElement=$('#action');
+
+    var form = document.forms.myform;
+
+form.myfile.addEventListener( 'change', function(e) {
+  
+    var result = e.target.files[0];
+
+    var reader = new FileReader();
+
+    reader.readAsText( result );
+
+    reader.addEventListener( 'load', function() {
+
+        csv=reader.result.split('\r\n')
+        readcsv=csv.filter(Boolean);
+        console.log( readcsv); 
+        for(let i=0;i<readcsv.length;i++){
+          splitcsv=readcsv[i].split(",");
+          console.log( readcsv); 
+          
+              $.ajax({
+              url: '{% url 'photo:ajax_get_createword' %}',
+              type: 'GET',
+              async: false,
+              data: {'word': splitcsv[0],'trans':splitcsv[1],'category':categoryElement.val(),}
+            }).done(response => {
+              
+             
+             
+            })
+        }
+        printlist();
+        form.myfile.value='';
+    })
+  })
+
+
     const printselect=()=>{
-      console.log('chans')        
+           
       var category_value=1;
-      console.log(category_value)  
+      
       $.ajax({
           url: '{% url 'photo:ajax_get_printlist' %}',
           type: 'GET',
@@ -93,7 +135,7 @@
           
               var textLists=response.message4; 
               textId=response.message5;             
-              console.log(textLists)
+              
              
               for(let i=0; i<textLists.length; i++){
                 const select=document.getElementById('id_parent');
@@ -118,7 +160,7 @@
         }).done(response => {
           var textLists=response.message3; 
           textId=response.message6;             
-          console.log(textLists)
+          
           for(let i=0; i<textLists.length; i++){
             const select=document.getElementById('id_category');
             let option=document.createElement('option');
@@ -133,7 +175,7 @@
 
     parentCategoryElement.on('change', () => {
         changeCategory();
-        console.log('change');
+       
     });
 
     // 入力値に問題があって再表示された場合、ページ表示時点で小カテゴリが絞り込まれるようにする
@@ -144,10 +186,9 @@
 
     
     const printlist=()=>{
-        console.log('chanf')
-        
+
         var category_value=categoryElement.val();
-            console.log(category_value);
+            
             $.ajax({
               url: '{% url 'photo:ajax_get_printlist' %}',
               type: 'GET',
@@ -157,8 +198,7 @@
             }).done(response => {     
                 textLists=response.message;
                 transLists=response.message2;
-                console.log(textLists)
-                console.log(transLists)
+                
                 textId=response.message7;
                
 
@@ -216,6 +256,21 @@
       });
   })
     
+}else if(actionElement.val()=='delete_all'){
+  $('input').each(function() {
+    var r = $(this).val();
+    
+    console.log(r);
+    $.ajax({
+      url: '{% url 'photo:ajax_get_deleteword' %}',
+      type: 'GET',
+      async: false,
+      data: {'id': r}
+    }).done(response => {
+      
+      printlist();
+    });
+})
 }
 })
     $('#saveword').on('click',function(){
@@ -230,7 +285,7 @@
           type: 'GET',
           data: {'word': wordvalueElement.val(),'trans':transvalueElement.val(),'category':categoryElement.val(),}
         }).done(response => {
-          console.log('save');
+          
           printlist();
           $('#wordvalue').val(""); 
           $('#transvalue').val(""); 

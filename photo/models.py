@@ -15,11 +15,11 @@ class ParentCategory(models.Model):
 class Category(models.Model):
     title=models.CharField(
         verbose_name='カテゴリ',
-        max_length=200)
+        max_length=200, blank=True, null=True)
     parent=models.ForeignKey(
         ParentCategory,
         verbose_name='親カテゴリ',
-        on_delete=models.PROTECT
+        on_delete=models.PROTECT, blank=True, null=True
         )
     
     def __str__(self):
@@ -27,32 +27,32 @@ class Category(models.Model):
 class Students(models.Model):
     name=models.CharField(
         verbose_name='名前',
-        max_length=200
+        max_length=200, blank=True, null=True
         
 
          )
-    student_id=models.CharField(verbose_name='生徒ID',max_length=200
+    student_id=models.CharField(verbose_name='生徒ID',max_length=200, blank=True, null=True
         
 
          )
     user=models.ForeignKey(
         CustomUser,
         verbose_name='ユーザー',
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE, blank=True, null=True
         )   
 
 class EnglishScore(models.Model):
     student=models.ForeignKey(
         Students,
         verbose_name='生徒',
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE, blank=True, null=True
         )
     
  
     category=models.ForeignKey(
         Category,
         verbose_name='カテゴリ',
-        on_delete=models.PROTECT
+        on_delete=models.PROTECT, blank=True, null=True
         )
     
 
@@ -60,19 +60,19 @@ class EnglishScore(models.Model):
 class EnglishWords(models.Model):
     word=models.CharField(
         verbose_name='英語',
-        max_length=200
+        max_length=200, blank=True, null=True
         
 
          )
     trans=models.CharField(
         verbose_name='翻訳',
-        max_length=200
+        max_length=200, blank=True, null=True
     )
   
     category=models.ForeignKey(
         Category,
         verbose_name='カテゴリ',
-        on_delete=models.PROTECT
+        on_delete=models.PROTECT, blank=True, null=True
         )
     def __str__(self):
         return self.word
@@ -81,16 +81,16 @@ class PhotoPost(models.Model):
     user=models.ForeignKey(
         CustomUser,
         verbose_name='ユーザー',
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE, blank=True, null=True
         )
     category=models.ForeignKey(
         Category,
         verbose_name='カテゴリ',
-        on_delete=models.PROTECT
+        on_delete=models.PROTECT, blank=True, null=True
         )
     title=models.CharField(
         verbose_name='タイトル',
-        max_length=200
+        max_length=200, blank=True, null=True
         )
     comment=models.TextField(
         verbose_name='コメント',

@@ -87,14 +87,23 @@ class TypingView(generic.edit.CreateView):
         }
 
         return self.render_to_response(context)
-# getsucusessurl
-# form_valid
 
-    success_url=reverse_lazy('photo:create')
-    def form_valid(self,form):
-        form.instance.author=self.request.user
-    # context
-        return super(CreateView,self).form_valid(form)
+
+
+class ScoreView(generic.edit.CreateView):
+    template_name='score.html'
+    model=EnglishWords
+    form_class=EnglishWordsTypingForm
+    def get(self, request, **kwargs):
+        name=Students.objects.values_list('name',flat=True).get(student_id=kwargs['pk'])
+        context = {
+            'pk': kwargs['pk'], 
+            'name':name,
+           
+        }
+
+        return self.render_to_response(context)
+
 
 class CreateStudentsView(LoginRequiredMixin,TemplateView):
      template_name='createstudents.html'
@@ -227,6 +236,22 @@ def ajax_get_createword(request):
         category_list = '保存'
         return JsonResponse({'categoryList': category_list})
 
+def ajax_get_createwordcsv(request):
+        
+        text1 = request.GET.get('wordcsv')
+        
+        id = request.GET.get('category')
+        print(id)
+        print(text1)
+        # for i in text1:
+        #     splitword=i.split(',')
+        #     print(splitword)
+        #     obj=EnglishWords(word=splitword[0],trans=splitword[1],category_id=id)
+        #     obj.save()
+
+        category_list = '保存'
+        return JsonResponse({'categoryList': category_list})
+
 def ajax_get_deleteword(request):
         print('delete')
         text = request.GET.get('id')
@@ -237,29 +262,52 @@ def ajax_get_deleteword(request):
 
 def ajax_get_saveuserscore(request):
         text1=request.GET.get('category')
-        text2=request.user.id
+        text2=request.GET.get('pk')
+        text=Students.objects.get(student_id=text2)
         print(text1)
         print(text2)
-        obj=EnglishScore(user_id=text2,category_id=text1)
+        obj=EnglishScore(student_id=text.id,category_id=text1)
         obj.save()
         return JsonResponse({'response': text2})
 
+
+
 def ajax_get_mypagelist(request):
         text=request.GET.get('pk')
-        text1=request.user.id
-        print(text1)
-        text2=list(EnglishScore.objects.filter(user_id=text1).values_list('category',flat=True))
-        text2=list(set(text2))
-        print(text2)
-        data ={'user':text1,'category':text2}
+        print(text)
+        text1=Students.objects.get(student_id=text)
+        text2=list(EnglishScore.objects.filter(student_id=text1.id).values_list('category_id__parent__title',flat=True))
+        parents=list(set(text2))
+   
+                  
+        data ={'category':parents}
         return JsonResponse(data)
 
 
-def ajax_get_mypageparentlist(request):
-        text=request.GET.get('pk')
-        parentlist=list(Category.objects.filter(id=text).values_list('parent__title',flat=True))
-        print(parentlist)
-        data ={'parent':parentlist}
+
+def ajax_get_mypagecategorylist(request):
+        text=request.GET.get('category')
+        text5=request.GET.get('pk')
+        text4=Students.objects.get(student_id=text5)
+        print(text)
+       
+        text2=list(EnglishScore.objects.filter(category_id__parent__title=text,student_id=text4.id).values_list('category_id__title',flat=True))
+        text3=list(set(text2))
+        number=[]
+        for cate in text3:
+            count=EnglishScore.objects.filter(category_id__title=cate,student_id=text4.id).count()
+            number.append(count)   
+        data ={'category':text3,'number':number}
+        return JsonResponse(data)
+
+def ajax_get_mypagecategorynumber(request):
+        text=request.GET.get('category')
+        text5=request.GET.get('pk')
+        text4=Students.objects.get(student_id=text5)
+        print(text)
+       
+        text2=EnglishScore.objects.filter(category_id__title=text,student_id=text4.id).count()
+        data ={'number':text2}
         return JsonResponse(data)
 
 def ajax_get_createstudent(request):
@@ -267,8 +315,8 @@ def ajax_get_createstudent(request):
         text1 = request.GET.get('student_id')
         text2 = request.GET.get('student_name')
         text3 = request.GET.get('user_id')
-        if(text3==1):
-             text3=request.user.id
+       
+        text3=request.user.id
         print(text1)
         print(text2)
         
@@ -277,11 +325,34 @@ def ajax_get_createstudent(request):
         category_list = '保存'
         return JsonResponse({'categoryList': category_list})
 
+def ajax_get_createstudentselect(request):
+        print('save')
+        text1 = request.GET.get('student_id')
+        text2 = request.GET.get('student_name')
+        text3 = request.GET.get('user_id')
+       
+        
+        print(text1)
+        print(text2)
+        
+        obj=Students(student_id=text1,name=text2,user_id=text3)
+        obj.save()
+        category_list = '保存'
+        return JsonResponse({'categoryList': category_list})
 def ajax_get_studentslist(request):
-        pk= request.GET.get('pk')
-        if(pk==1):
-            pk=request.user.id
-      
+        
+        pk=request.user.id
+        print(pk)
+             
+        student_id=list(Students.objects.filter(user=pk).values_list('student_id', flat=True))
+        student_name=list(Students.objects.filter(user=pk).values_list('name', flat=True))
+        data ={'student_id':student_id,'student_name':student_name}
+        return JsonResponse(data)
+
+def ajax_get_studentslistselect(request):
+        
+        pk=request.GET.get('pk')
+        print(pk)
              
         student_id=list(Students.objects.filter(user=pk).values_list('student_id', flat=True))
         student_name=list(Students.objects.filter(user=pk).values_list('name', flat=True))

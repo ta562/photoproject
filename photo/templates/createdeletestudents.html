@@ -37,14 +37,15 @@
 <div>
   <label for="id_user">教室:
     <select name="parent_category" id="id_user">
+      <option value="" selected>---------</option>
     </select>
 </label></div>
-<list>
+<list><label for='studentid'>生徒ID:</label>
+  <input type="text" name="title" maxlength="200" id="studentid">
   <label for='studentname'>名前:
   <input type="text" name="title" maxlength="200" id="studentname"></label>
 
-  <label for='studentid'>生徒ID:</label>
-  <input type="text" name="title" maxlength="200" id="studentid">
+  
 </list>
 
 <list>
@@ -107,7 +108,7 @@
       var category_value=parentCategoryElement.val();
       console.log(category_value);
       $.ajax({
-        url: '{% url 'photo:ajax_get_studentslist' %}',
+        url: '{% url 'photo:ajax_get_studentslistselect' %}',
         type: 'GET',
         data: {
           'pk': category_value,
@@ -179,7 +180,7 @@
       }else{
         console.log(studentIdElement.val())
         $.ajax({
-          url: '{% url 'photo:ajax_get_createstudent' %}',
+          url: '{% url 'photo:ajax_get_createstudentselect' %}',
           type: 'GET',
           data: {'student_id': studentIdElement.val(),'student_name':studentNameElement.val(),'user_id':parentCategoryElement.val()}
         }).done(response => {
@@ -201,7 +202,7 @@
       }
     }
 
-
+    printlist();
           
 </script>
 

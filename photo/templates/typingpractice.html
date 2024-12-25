@@ -108,7 +108,10 @@ table{ margin: auto;
         <form action="" method="POST">
             {{ form.as_p }}
         </form>
+</div>  <div class='start'>
+            <button id="start" class="btnstart">スタート Enter↲</button>
 
+        </div>
         <div class='typing'>
             <list class="limit" id='limit'>目標時間</list>
             <list id="count" class="count">60</list>
@@ -131,10 +134,7 @@ table{ margin: auto;
 
                 </div>
             </div>
-        </div>  <div class='start'>
-            <button id="start" class="btnstart">スタート Enter↲</button>
-
-        </div>
+        
      <br>
      <br>
      <br>
@@ -277,7 +277,7 @@ table{ margin: auto;
                 strHead=untyped.slice(0,1);
                 blank='';
                 for(i = 0; i<untyped.length-1; i++){
-                    blank+='〇'
+                    blank+='_'
                     console.log(blank)
                 }
                 untypedfield.textContent=strHead+blank;
@@ -303,7 +303,7 @@ table{ margin: auto;
                 console.log(untyped.length)
                 blank='';
                 for(i = 0; i<untyped.length; i++){
-                    blank+='〇'
+                    blank+='_'
                     console.log(blank)
                 }
                 untypedfield.textContent=blank;
@@ -319,7 +319,7 @@ table{ margin: auto;
 
             const rankCheckClear=score=>{
                 let text='';            
-                return  `制限時間内にすべての単語を打てました\nおめでとうございます\n【OK】リトライ / 【キャンセル】終了`
+                return  `制限時間内にすべての単語を打てました\nおめでとう!\n【OK】リトライ / 【キャンセル】終了`
 
             };
 

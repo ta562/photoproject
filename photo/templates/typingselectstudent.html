@@ -209,7 +209,7 @@ table{ margin: auto;
               start.addEventListener('click',function(){
                 pk=pkElement.val()
                 console.log(pk);
-                window.location.replace("{% url 'photo:typing' 123456 %}".replace(/123456/,pk));
+                window.location.assign("{% url 'photo:typing' 123456 %}".replace(/123456/,pk));
 
               },false);
         
