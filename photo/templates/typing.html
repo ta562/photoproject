@@ -88,25 +88,25 @@ table{
 	transition: 0.5s;
 }
 
-.form{ 
+.form{
     color: #5c5e82;
       font-size: 2rem;
-     
+
       text-align-last: center;
      }
-  
+
   .selectbox-2 {
     position: relative;
     margin-left:20px;
   }
-  
+
   .selectbox-2::before,
   .selectbox-2::after {
     position: absolute;
     content: '';
     pointer-events: none;
   }
-  
+
   .selectbox-2::before {
     right: 0;
     display: inline-block;
@@ -116,7 +116,7 @@ table{
     background-color: #faa63e;
     content: '';
   }
-  
+
   .selectbox-2::after {
     position: absolute;
     top: 50%;
@@ -128,26 +128,26 @@ table{
     border-right: 3px solid #fff;
     content: '';
   }
-  
+
   .selectbox-2 select {
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
     min-width: 230px;
     height: 2em;
-    padding: 0.1em 4em .4em .8em;
+    padding: 0.1em 4em .4em .1em;
     border: 2px solid #faa63e;
     border-radius: 3px;
     color: #5c5e82;
     font-size: 1em;
     cursor: pointer;
   }
-  
+
   .selectbox-2 select:focus {
     outline: 1px solid #f2d673;
   }
   .field {
-    
+
     display: flex;
     align-items: center;
     justify-content: center;
@@ -181,14 +181,14 @@ table{
         <meta name="description" content="簡易的なタイピング">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <div class='field'>
-        <h2 id='id_name' class='m-3'></h2> 
-        
+        <h2 id='id_name' class='m-3'></h2>
+
         <button id='mypagelink' class="btn btn-custom m-3">成績を確認する</button>
-        
+
         </div>
         <div class=" py-5 bg-white">
         <div class='form'>
-             
+
         <label for="id_parent"class='selectbox-2'>教材:
         <select name="parent_category" id="id_parent">
         <option value="" selected>---------</option>
@@ -207,7 +207,7 @@ table{
 
         </div>
             <div id="wrap" class="wrap">
-               
+
 
                     <div>
                         <p id="trans" ></p>
@@ -221,7 +221,7 @@ table{
                         </table>
                     </div>
 
-               
+
             </div>
         </div>
     </div>
@@ -255,11 +255,11 @@ table{
             const studentnameElement = $('#id_name');
             const parentCategoryElement = $('#id_parent');
             const categoryElement = $('#id_category');
-            const wordvalueElement = $('#wordvalue');  
-            const transvalueElement = $('#transvalue');  
+            const wordvalueElement = $('#wordvalue');
+            const transvalueElement = $('#transvalue');
             const mypagelink = $('#mypagelink')
-            
-            
+
+
             studentnameElement.text('ID'+'{{pk}}'+' : '+'{{name}}'+'くん テスト');
             studentnameElement.val('{{pk}}');
             mypagelink.click(function(){
@@ -268,36 +268,36 @@ table{
                 window.location.assign("{% url 'photo:score' 123456 %}".replace(/123456/,pk));
 
               });
-           
+
 
 
             const printselect=()=>{
-              console.log('chans')        
+              console.log('chans')
               var category_value=1;
-              console.log(category_value)  
+              console.log(category_value)
               $.ajax({
                   url: '{% url 'photo:ajax_get_printlist' %}',
                   type: 'GET',
                   data: {
                     'pk': category_value,
                         }
-                }).done(response => {              
-                  
-                      var textLists=response.message4; 
-                      textId=response.message5;             
+                }).done(response => {
+
+                      var textLists=response.message4;
+                      textId=response.message5;
                       console.log(textLists)
-                     
+
                       for(let i=0; i<textLists.length; i++){
                         const select=document.getElementById('id_parent');
                         let option=document.createElement('option');
                         option.text=textLists[i];
                         option.value=textId[i];
-                       
+
                         select.appendChild(option);
                       }
                   });
                 };
-               
+
 
                 const changeCategory = (select) => {
                     categoryElement.children().remove();
@@ -308,21 +308,21 @@ table{
                             'pk': parentCategoryElement.val(),
                         }
                     }).done(response => {
-                      var textLists=response.message3; 
-                      textId=response.message6;             
+                      var textLists=response.message3;
+                      textId=response.message6;
                       console.log(textLists)
                       for(let i=0; i<textLists.length; i++){
                         const select=document.getElementById('id_category');
                         let option=document.createElement('option');
                         option.text=textLists[i];
                         option.value=textId[i];
-                       
+
                         select.appendChild(option);
                       }
                         printlist();
                     });
                 };
-        
+
                 parentCategoryElement.on('change', () => {
                     changeCategory();
                     console.log('change');
@@ -336,13 +336,12 @@ table{
                 categoryElement.on("change",()=>{
                     printlist();
                 })
-            
+
             typedfield.textContent='';
             untypedfield.textContent='スタートを押してください';
 
-            
 
-            
+
             const printlist=()=>{
                 var category_value=categoryElement.val();
                 var xhr=new XMLHttpRequest();
@@ -356,12 +355,12 @@ table{
                         transLists=responseData.message2;
                         console.log(textLists)
                         console.log(transLists)
-                        let time=count.textContent; 
+                        let time=count.textContent;
                         var wordcount=0;
                         for(i=0;i<textLists.length;i++){
                             wordcount+=textLists[i].length;
                             }
-                        let long=wordcount*1;       
+                        let long=wordcount*2;
                         count.textContent=long;
 
                         var table = document.getElementById("tbl1");  // 行の削除
@@ -398,26 +397,26 @@ table{
                 cell2.appendChild(celltrans);
                 tr.appendChild(cell2);
                 tbl.appendChild(tr);
-                
+
                 mistypetextLists.push(textLists[counter]);
                 mistypetransLists.push(transLists[counter]);
-                
+
                 gameinfo=1;
             }
 
             var counter=0;
             let random;
-         
- 
+
+
 
             const createText =()=>{
                {
-                
+
                 typed='';
                 typedfield.textContent=typed;
                 transfield.textContent=transLists[counter];
                 untyped = textLists[counter];
-                
+
                 strHead=untyped.slice(0,1);
                 blank='';
                 for(i = 0; i<untyped.length-1; i++){
@@ -425,11 +424,11 @@ table{
                     console.log(blank)
                 }
                 untypedfield.textContent=strHead+blank;
-                
+
 
             };}
 
-        
+
 
             const keyPress=e=>{
                 console.log(e.key);
@@ -441,7 +440,7 @@ table{
                     printmistypelist();
                     counter++;
                     createText();
-                    
+
                     return;
                 }
 
@@ -458,18 +457,18 @@ table{
                 untypedfield.textContent=blank;
                 if(untyped===''){
                     counter++;
-                    
+
                     createText()
                 }
             };
             const rankCheck=score=>{
-                let text='';            
+                let text='';
                 return  `時間切れです\n早く打てるように練習しましょう\n【OK】リトライ / 【キャンセル】終了`
 
             };
 
             const rankCheckClear=score=>{
-                let text='';            
+                let text='';
                 return  `制限時間内にすべての単語を打てました\nおめでとうございます\n【OK】リトライ / 【キャンセル】終了`
 
             };
@@ -477,37 +476,38 @@ table{
             const gameOver=id=>{
                 counter=0;
                 gamestate=0;
+                gameinfo=0;
                 clearInterval(id);
-                
-                
+　　　　　　　　
+
                 transfield.textContent='時間切れです';
                 typedfield.textContent='';
                 untypedfield.textContent='初めからやり直してください';
                 endfield.textContent='';
-              
+
                     start.style.display = '';
                     limit.style.display = '';
                     start.textContent='再スタート Enter↲ '
                     printlist();
-                
+
              };
 
 
              const gameClear=id=>{
                 counter=0;
                 gamestate=0;
-               
+
                 if(gameinfo==0){
                     clearInterval(id);
                 $('.field').show();
-                var select=document.getElementById('select');
+
                 categoryElement.css('visibility', 'visible');
                 parentCategoryElement.css('visibility', 'visible');
-                $("label[for='id_parent_category']").css('visibility', 'visible');
+                $("label[for='id_parent']").css('visibility', 'visible');
                 $("label[for='id_category']").css('visibility', 'visible');
                 scoreSave();
                 typedfield.textContent='合格おめでとう！';
-                
+
                 untypedfield.textContent='';
                 endfield.textContent='';
                 start.style.display = '';
@@ -526,7 +526,7 @@ table{
             }
 
             const scoreSave = () => {
-                
+
                 $.ajax({
                     url: '{% url 'photo:ajax_get_saveuserscore' %}',
                     type: 'GET',
@@ -565,12 +565,12 @@ table{
                     transLists=mistypetransLists;
                     mistypetextLists=[];
                     mistypetransLists=[];
-                    let time=count.textContent; 
+                    let time=count.textContent;
                     var wordcount=0;
                     for(i=0;i<textLists.length;i++){
                         wordcount+=textLists[i].length;
                         }
-                    
+
                         createText();
                         categoryElement.css('visibility', 'hidden');
                         parentCategoryElement.css('visibility', 'hidden');
@@ -581,7 +581,7 @@ table{
                         var table = document.getElementById("tbl1");  // 行の削除
                                 while (table.rows.length > 0) table.deleteRow(0);
                         endfield.textContent='';
-                        
+
                         document.addEventListener('keypress',keyPress);
                         trans.style.display='';
                         gamestate=1;
@@ -598,14 +598,14 @@ table{
                 var table = document.getElementById("tbl1");  // 行の削除
                         while (table.rows.length > 0) table.deleteRow(0);
                 endfield.textContent='';
-                
+
                 document.addEventListener('keypress',keyPress);
                 trans.style.display='';
                 gamestate=1;
                 }
             };
             untypedfield.textContent='';
-    
+
             start.addEventListener('click',()=>{
                 startgame();
             });
