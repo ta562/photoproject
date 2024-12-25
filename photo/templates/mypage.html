@@ -7,6 +7,7 @@
         <h4>{{user.username}}さんのマイページ</h4>
         {% if object_list.count == 0 %}
             <p>{{user.username}}さんの記録はありません</p>
+            <div></div>
         {% else %}
             <p>投稿<strong>{{object_list.count}}</strong>件</p>
         {% endif %}
