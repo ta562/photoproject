@@ -120,7 +120,13 @@ class CreateView(LoginRequiredMixin,generic.edit.CreateView):
     def form_valid(self,form):
         form.instance.author=self.request.user
         return super(CreateView,self).form_valid(form)
-    
+
+class CreateEditView(LoginRequiredMixin,TemplateView):
+      template_name='createformedit.html'
+      def get(self, request, **kwargs):
+        context = {'pk': kwargs['pk'],}
+        return self.render_to_response(context)
+
 class CreateCategoryView(LoginRequiredMixin,TemplateView):
     model=Category
     template_name='createcategoryform.html'

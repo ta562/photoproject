@@ -164,15 +164,8 @@ table{
   #id_name{
     color: #5c5e82;
   }
-{% comment %}
-  .field {
-    display: flex;
-    justify-content: space-around;
-    }
 
-{% endcomment %}
-
-
+  
 
 
 </style>
@@ -180,11 +173,22 @@ table{
         <meta charset="utf-8">
         <meta name="description" content="簡易的なタイピング">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<audio id="id_audio1"    
+    src="{% static "audio/se1.mp3" %}">
+</audio>
+<audio id="id_audio2"    
+    src="{% static "audio/se2.mp3" %}">
+</audio>
+<audio id="id_audio3"    
+    src="{% static "audio/se3.mp3" %}">
+</audio>
+<audio id="id_audio4"    
+    src="{% static "audio/se4.mp3" %}">
+</audio>
         <div class='field'>
         <h2 id='id_name' class='m-3'></h2>
-
         <button id='mypagelink' class="btn btn-custom m-3">成績を確認する</button>
-
         </div>
         <div class=" py-5 bg-white">
         <div class='form'>
@@ -231,14 +235,9 @@ table{
 
         {% block extrajs %}
         <script>
-
-
-
-
             let untyped='';
             let typed='';
             let score=0;
-
             var textLists;
             var transLists
             var untypedfield=document.getElementById('untyped');
@@ -247,6 +246,10 @@ table{
             const start=document.getElementById('start')
             const limit=document.getElementById('limit')
             const count=document.getElementById('count')
+            const audio1=document.getElementById('id_audio1')
+            var audio2=document.getElementById('id_audio2')
+            const audio3=document.getElementById('id_audio3')
+            const audio4=document.getElementById('id_audio4')
             const transfield=document.getElementById('trans');
             const endfield=document.getElementById('end');
             var select=document.getElementById('select');
@@ -258,8 +261,6 @@ table{
             const wordvalueElement = $('#wordvalue');
             const transvalueElement = $('#transvalue');
             const mypagelink = $('#mypagelink')
-
-
             studentnameElement.text('ID'+'{{pk}}'+' : '+'{{name}}'+'くん テスト');
             studentnameElement.val('{{pk}}');
             mypagelink.click(function(){
@@ -268,8 +269,6 @@ table{
                 window.location.assign("{% url 'photo:score' 123456 %}".replace(/123456/,pk));
 
               });
-
-
 
             const printselect=()=>{
               console.log('chans')
@@ -340,8 +339,6 @@ table{
             typedfield.textContent='';
             untypedfield.textContent='スタートを押してください';
 
-
-
             const printlist=()=>{
                 var category_value=categoryElement.val();
                 var xhr=new XMLHttpRequest();
@@ -360,7 +357,7 @@ table{
                         for(i=0;i<textLists.length;i++){
                             wordcount+=textLists[i].length;
                             }
-                        let long=wordcount*2;
+                        let long=Math.round(wordcount*1.5);
                         count.textContent=long;
 
                         var table = document.getElementById("tbl1");  // 行の削除
@@ -420,7 +417,7 @@ table{
                 strHead=untyped.slice(0,1);
                 blank='';
                 for(i = 0; i<untyped.length-1; i++){
-                    blank+='_'
+                    blank+='-'
                     console.log(blank)
                 }
                 untypedfield.textContent=strHead+blank;
@@ -440,7 +437,9 @@ table{
                     printmistypelist();
                     counter++;
                     createText();
-
+                    
+                    new Audio("{% static "audio/se2.mp3" %}").play();
+                    
                     return;
                 }
 
@@ -451,14 +450,14 @@ table{
                 console.log(untyped.length)
                 blank='';
                 for(i = 0; i<untyped.length; i++){
-                    blank+='_'
+                    blank+='-'
                     console.log(blank)
                 }
                 untypedfield.textContent=blank;
                 if(untyped===''){
                     counter++;
-
-                    createText()
+                    audio1.play();
+                    createText();
                 }
             };
             const rankCheck=score=>{
@@ -474,12 +473,12 @@ table{
             };
 
             const gameOver=id=>{
+                $('body').css('overflow', '');
                 counter=0;
                 gamestate=0;
                 gameinfo=0;
                 clearInterval(id);
-　　　　　　　　
-
+                audio4.play();
                 transfield.textContent='時間切れです';
                 typedfield.textContent='';
                 untypedfield.textContent='初めからやり直してください';
@@ -499,6 +498,7 @@ table{
 
                 if(gameinfo==0){
                     clearInterval(id);
+                    $('body').css('overflow', '');
                 $('.field').show();
 
                 categoryElement.css('visibility', 'visible');
@@ -507,7 +507,7 @@ table{
                 $("label[for='id_category']").css('visibility', 'visible');
                 scoreSave();
                 typedfield.textContent='合格おめでとう！';
-
+                audio3.play();
                 untypedfield.textContent='';
                 endfield.textContent='';
                 start.style.display = '';
@@ -515,6 +515,7 @@ table{
                 start.textContent='スタート Enter↲ '
                 printlist();
             }else{
+                $('body').css('overflow', '');
                 typedfield.textContent='';
                 transfield.textContent='間違えた単語があります';
                 untypedfield.textContent='よく確認してから再スタートしてください';
@@ -559,6 +560,9 @@ table{
             };
             var gamestate=0;
             var gameinfo=0;
+
+
+
             const startgame=()=>{
                 if(gameinfo==1){
                     textLists=mistypetextLists;
@@ -586,6 +590,7 @@ table{
                         trans.style.display='';
                         gamestate=1;
                 }else{
+                    $('body').css('overflow', 'hidden');
                 createText();
                 timer();
                 $('.field').hide();
@@ -623,9 +628,3 @@ table{
 
             {% endblock %}
 
-<!-- {% for product in object_list %}
-<tr>
-<td>{{ product.word }}</td>
-<td>{{ product.trans }} 円</td>
-</tr>
-{% endfor %} -->
