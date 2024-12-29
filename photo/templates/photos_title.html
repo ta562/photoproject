@@ -1,19 +1,32 @@
 
 
+<style>
+  .btn-custom{
+    background-color: #faa63e;
+    color: white;
+  }
+  .btn-custom:hover {
+    background-color: #faa80e;
+    color: #ffffff;
+  }
+.fieldtitle {
 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+  color: #5c5e82;
+  }
+</style>
   <section class=" text-center container">
-    <div class="row py-lg-5">
-      <div class="col-lg-6 col-md-8 mx-auto">
-        <h4 class="fw-light">EN typing 練習</h4>
+    <div class="py-2">
+      <div class="">
+       
+        
         
         {% if user.is_authenticated %}
         <a href="{% url 'photo:typingselectstudent' %}"
-            class="btn btn-primary ">テストを開始する</a>
-        {% comment %} <a href="{% url 'accounts:logout' %}"
-            class="btn btn-secondary my-2">ログアウト</a> {% endcomment %}
-           
-            </form>    
-                
+            class="btn btn-custom my-2" ">テストを開始する</a>
             
         {% else %}
         <p class="lead text-muted">ログインしてテストの結果を記録しましょう</p>
@@ -26,6 +39,10 @@
         </p>
       </div>
     </div>
+    <div class='fieldtitle'>
+      <h2 id='id_name' class=''>タイピング練習</h2>
+      
+      </div>
   </section>
 
  

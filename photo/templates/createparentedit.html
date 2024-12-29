@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}ENtyping {% endblock %}
+{% block contents %}
+<style>
+    form{
+     
+    }
+
+    .table{ 
+
+      font-size: 1rem;
+        width: 500px;
+     text-align: center;
+     border-collapse: collapse;
+     border-spacing: 0;
+      }
+    p{
+      margin: 10px;
+    }
+    
+    
+      table th{
+        padding: 10px;
+        border-bottom: solid 4px #d4d6d6;
+        color: #778ca3
+      }
+    
+      table td{
+        padding: 10px;
+        border-bottom: solid 1px #d4d6d6;
+      }
+</style>
+<h1 id="id_title"></h1>
+  
+  <p>
+    <label for="id_trans">親カテゴリ:</label>
+    <input type="text" name="trans" maxlength="200" id="transvalue">
+    <list>
+      <button id='saveword'>更新</button><!-- 新規と編集で表示を変更 -->
+    </list>
+    
+  </p>
+
+    
+  {% endblock %}
+  {% block extrajs %}
+  <script>
+   
+    const transvalueElement = $('#transvalue');  
+    const actionElement=$('#action');
+    const titleElement=$('#id_title')
+  
+    titleElement.text('{{title}}'+'の編集')
+    transvalueElement.val('{{title}}');
+
+    $('#saveword').on('click',function(){
+      if(checkkaraMoji(transvalueElement.val())==false){
+        return false;
+      }else{
+       
+        $.ajax({
+          url: '{% url 'photo:ajax_get_editer' %}',
+          type: 'GET',
+          data: {'title':transvalueElement.val(),'id':{{id}},'target':'parent'}
+        }).done(response => {
+        
+          window.location.assign("{% url 'photo:createparentcategory' %}");
+        });
+      }
+    });
+
+    const checkkaraMoji=(checkStr)=>{
+      if(!checkStr){
+        console.log('空文');
+        alert('空欄です')
+        return false;
+      }else{
+        console.log('文字列');
+      }
+    }
+</script>
+
+{% endblock %}

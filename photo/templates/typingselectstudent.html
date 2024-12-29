@@ -97,10 +97,17 @@ table{ margin: auto;
     margin: auto;
     text-align-last: center;
     margin-top: 28px}
+.textbox{
+  border: 2px solid #faa63e;
+}
+.textbox:focus{
+  border: 2px solid #dadada!important;
+}
 
 .selectbox-2 {
   position: relative;
 }
+
 
 .selectbox-2::before,
 .selectbox-2::after {
@@ -149,17 +156,29 @@ table{ margin: auto;
   outline: 1px solid #f2d673;
 }
 
+.field {
+
+display: flex;
+align-items: center;
+justify-content: center;
+margin: auto;
+}
+
 
 </style>
 
   <meta charset="utf-8">
   <meta name="description" content="簡易的なタイピング">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+  <div class="field">
+  </div>
   <div class='form'>
-  <label for="id_student" class="selectbox-2">生徒選択:
+    <h2 id='id_name' class='mt-1 text-danger fs-5'></h2>
+    <label for="id_student">生徒ID</label>
+    <input type="text" id="id_student" class="textbox">
+  <!-- <label for="id_student" class="selectbox-2">生徒選択:
     <select name="parent_category" id="id_student" ></select>
-  </label>
+  </label> -->
 </div>
   <div class="tables">
     <table id="tbl1"  ></table>
@@ -174,60 +193,56 @@ table{ margin: auto;
         {% block extrajs %}
         <script>
             const start=document.getElementById('start')
-            const printlist=()=>{
-                console.log('chanf')        
-                var category_value=1;
-                console.log(category_value);
-                $.ajax({
-                  url: '{% url 'photo:ajax_get_studentslist' %}',
-                  type: 'GET',
-                  data: {
-                    'pk': category_value,
-                        }
-                }).done(response => {
-                  textId=response.student_id
-                  textLists=response.student_name;
+//             const printlist=()=>{
+//                 console.log('chanf')        
+//                 var category_value=1;
+//                 console.log(category_value);
+//                 $.ajax({
+//                   url: '{% url 'photo:ajax_get_studentslist' %}',
+//                   type: 'GET',
+//                   data: {
+//                     'pk': category_value,
+//                         }
+//                 }).done(response => {
+//                   textId=response.student_id
+//                   textLists=response.student_name;
                   
                               
-                  console.log(textLists)
+//                   console.log(textLists)
                  
-                  for(let i=0; i<textLists.length; i++){
-                    const select=document.getElementById('id_student');
-                    let option=document.createElement('option');
-                    option.text=textId[i]+' : '+textLists[i];
-                    option.value=textId[i];
+//                   for(let i=0; i<textLists.length; i++){
+//                     const select=document.getElementById('id_student');
+//                     let option=document.createElement('option');
+//                     option.text=textId[i]+' : '+textLists[i];
+//                     option.value=textId[i];
                    
-                    select.appendChild(option);
-                  }
-                });
-              };
+//                     select.appendChild(option);
+//                   }
+//                 });
+//               };
 
- printlist();
+//  printlist();
 
          
-
+         const pkElement = $('#id_student');   
+         const nameElement = $('#id_name');   
               start.addEventListener('click',function(){
                 pk=pkElement.val()
-                console.log(pk);
-                window.location.assign("{% url 'photo:typing' 123456 %}".replace(/123456/,pk));
-
-              },false);
-        
-         
-
-         const pkElement = $('#id_student');    
-         
-         pkElement.on("change",()=>{
-         pk=pkElement.val()
-         console.log(pk);
-        })
-            </script>
-
+                $.ajax({
+               url: '{% url 'photo:ajax_get_checkstudentslist' %}',
+               type: 'GET',
+               async: false,
+               data: {'pk': pk,}
+             }).done(response => {
+               text=response.student;
+               console.log(text)
+                if(text=='None'){
+                  nameElement.text('登録されていない生徒IDです');
+                }else{
+                  
+                  window.location.assign("{% url 'photo:typing' 123456 %}".replace(/123456/,pk));
+               }
+                
+              });});
+  </script>
             {% endblock %}
-
-<!-- {% for product in object_list %}
-<tr>
-<td>{{ product.word }}</td>
-<td>{{ product.trans }} 円</td>
-</tr>
-{% endfor %} -->

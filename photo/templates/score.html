@@ -240,7 +240,9 @@ table{
                 console.log(pk);
                 $.ajax({
                   url: '{% url 'photo:ajax_get_mypagelist' %}',
+                  
                   type: 'GET',
+                  async: false,
                   data: {
                     'pk': pk,
                    
@@ -267,7 +269,9 @@ table{
                     
                   $.ajax({
                     url: '{% url 'photo:ajax_get_mypagecategorylist' %}',
+                    
                     type: 'GET',
+                    async: false,
                     data: {
                       'category': parentcategorylist[i],
                       'pk': pk,

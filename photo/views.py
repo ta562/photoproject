@@ -82,13 +82,9 @@ class TypingView(generic.edit.CreateView):
         name=Students.objects.values_list('name',flat=True).get(student_id=kwargs['pk'])
         context = {
             'pk': kwargs['pk'], 
-            'name':name,
-           
+            'name':name,        
         }
-
         return self.render_to_response(context)
-
-
 
 class ScoreView(generic.edit.CreateView):
     template_name='score.html'
@@ -124,18 +120,28 @@ class CreateView(LoginRequiredMixin,generic.edit.CreateView):
 class CreateEditView(LoginRequiredMixin,TemplateView):
       template_name='createformedit.html'
       def get(self, request, **kwargs):
-        context = {'pk': kwargs['pk'],}
+        context = {'id': kwargs['id'],'word':kwargs['word'],'trans':kwargs['trans']}
         return self.render_to_response(context)
 
 class CreateCategoryView(LoginRequiredMixin,TemplateView):
     model=Category
     template_name='createcategoryform.html'
 
+class EditCategoryView(LoginRequiredMixin,TemplateView):
+      template_name='createcategoryedit.html'
+      def get(self, request, **kwargs):
+        context = {'id': kwargs['id'],'title':kwargs['title']}
+        return self.render_to_response(context)
 
 class CreateParentCategoryView(LoginRequiredMixin,TemplateView):
     model=ParentCategory
     template_name='createparentcategoryform.html'
     
+class EditParentCategoryView(LoginRequiredMixin,TemplateView):
+      template_name='createparentedit.html'
+      def get(self, request, **kwargs):
+        context = {'id': kwargs['id'],'title':kwargs['title']}
+        return self.render_to_response(context)
 
 @csrf_exempt
 def process(request):
@@ -242,6 +248,38 @@ def ajax_get_createword(request):
         category_list = '保存'
         return JsonResponse({'categoryList': category_list})
 
+def ajax_get_editword(request):
+        print('save')
+        text1 = request.GET.get('word')
+        text2 = request.GET.get('trans')
+        text3 = request.GET.get('id')
+        format(text3)
+        print(text1+text2)
+        obj=EnglishWords.objects.get(id=text3)
+        obj.word=text1
+        obj.trans=text2
+        obj.save()
+        category_list = '保存'
+        return JsonResponse({'categoryList': category_list})
+
+def ajax_get_editer(request):
+        print('save')
+        text1 = request.GET.get('title')
+        text2 = request.GET.get('id')
+        text3 = request.GET.get('target')
+        
+        if text3=='category':
+             categoryobj=Category.objects.get(id=text2)
+             categoryobj.title=text1
+             categoryobj.save()
+        elif text3=='parent':
+             parentobj=ParentCategory.objects.get(id=text2)
+             parentobj.title=text1
+             parentobj.save()    
+
+        category_list = '保存'
+        return JsonResponse({'categoryList': category_list})
+
 def ajax_get_createwordcsv(request):
         
         text1 = request.GET.get('wordcsv')
@@ -282,9 +320,10 @@ def ajax_get_mypagelist(request):
         text=request.GET.get('pk')
         print(text)
         text1=Students.objects.get(student_id=text)
-        text2=list(EnglishScore.objects.filter(student_id=text1.id).values_list('category_id__parent__title',flat=True))
+        text2=list(EnglishScore.objects.order_by('category_id__parent__id').filter(student_id=text1.id).values_list('category_id__parent__title',flat=True))
+        print(text2)
         parents=list(set(text2))
-   
+        print(parents)
                   
         data ={'category':parents}
         return JsonResponse(data)
@@ -295,10 +334,11 @@ def ajax_get_mypagecategorylist(request):
         text=request.GET.get('category')
         text5=request.GET.get('pk')
         text4=Students.objects.get(student_id=text5)
-        print(text)
-       
+        
         text2=list(EnglishScore.objects.filter(category_id__parent__title=text,student_id=text4.id).values_list('category_id__title',flat=True))
+        print(text2)
         text3=list(set(text2))
+        print(text3)
         number=[]
         for cate in text3:
             count=EnglishScore.objects.filter(category_id__title=cate,student_id=text4.id).count()
@@ -377,3 +417,14 @@ class TypingSelectStudentView(LoginRequiredMixin,TemplateView):
     
     template_name='typingselectstudent.html'
 
+def ajax_get_checkstudentslist(request):
+        pk=request.GET.get('pk')
+        print(pk)
+        try:
+             studentobj=Students.objects.get(student_id=pk)
+             student_name=studentobj.name
+        except:
+             student_name='None'
+        print(student_name)
+        data ={'student':student_name}
+        return JsonResponse(data)

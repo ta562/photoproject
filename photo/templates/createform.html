@@ -215,8 +215,11 @@ form.myfile.addEventListener( 'change', function(e) {
                     cell1.appendChild(check);
                    
                     let cell=document.createElement('td');
+                    let celllink=document.createElement('a');
+                    celllink.setAttribute('href','{% url 'photo:createedit' 456 457 458 %}'.replace(/456/,textId[i]).replace(/457/,textLists[i]).replace(/458/,transLists[i]))
                     let celltext=document.createTextNode(textLists[i]);
-                    cell.appendChild(celltext);
+                    celllink.appendChild(celltext);
+                    cell.appendChild(celllink);
                     let cell2=document.createElement('td');
                     let celltrans=document.createTextNode(transLists[i]);
                     cell2.appendChild(celltrans);

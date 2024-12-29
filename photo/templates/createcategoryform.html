@@ -127,10 +127,13 @@
                   let cell=document.createElement('td');
                   cell.appendChild(check);
                   tr.appendChild(cell);
-                  let td=document.createElement('td');
-                  let celltext=document.createTextNode(textLists[i]);
-                  td.appendChild(celltext);
-                  tr.appendChild(td);
+                  let cell2=document.createElement('td')
+                  let celllink=document.createElement('a');
+                  celllink.setAttribute('href','{% url 'photo:editcategory' 123 456 %}'.replace(/123/,textId[i]).replace(/456/,textLists[i]))
+                   let celltext=document.createTextNode(textLists[i]);
+                  celllink.appendChild(celltext);
+                  cell2.appendChild(celllink);
+                  tr.appendChild(cell2);
                   tbl.appendChild(tr);
                 }
             });

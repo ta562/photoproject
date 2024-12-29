@@ -35,7 +35,7 @@
 
     <p>
     <label for="id_word">英語:</label>
-    <input type="text" name="word" maxlength="200" required id="wordvalue">
+    <input type="text" name="word" maxlength="200" id="wordvalue">
     
     
   </p>
@@ -43,14 +43,14 @@
   
   <p>
     <label for="id_trans">翻訳:</label>
-    <input type="text" name="trans" maxlength="200" required id="transvalue">
+    <input type="text" name="trans" maxlength="200" id="transvalue">
     <list>
-      <button id='saveword'>作成</button><!-- 新規と編集で表示を変更 -->
+      <button id='saveword'>更新</button><!-- 新規と編集で表示を変更 -->
     </list>
     
   </p>
 
-  <label for="id_parent">親カテゴリ:</label>
+  <!-- <label for="id_parent">親カテゴリ:</label>
   <select name="parent_category" id="id_parent">
   <option value="" selected>---------</option>
   </select>
@@ -58,208 +58,88 @@
   <select name="parent_category" id="id_category">
   <option value="" selected>---------</option>
   </select>
-  <br> <block>
+  <br> <block> -->
   
     
   {% endblock %}
   {% block extrajs %}
   <script>
-    const parentCategoryElement = $('#id_parent');
-    const categoryElement = $('#id_category');
+    // const parentCategoryElement = $('#id_parent');
+    // const categoryElement = $('#id_category');
     const wordvalueElement = $('#wordvalue');  
     const transvalueElement = $('#transvalue');  
     const actionElement=$('#action');
     const titleElement=$('#id_title')
     var form = document.forms.myform;
 
-    titleElement.text({{pk}}+'の編集')
-
-form.myfile.addEventListener( 'change', function(e) {
-  
-    var result = e.target.files[0];
-
-    var reader = new FileReader();
-
-    reader.readAsText( result );
-
-    reader.addEventListener( 'load', function() {
-
-        csv=reader.result.split('\r\n')
-        readcsv=csv.filter(Boolean);
-        console.log( readcsv); 
-        for(let i=0;i<readcsv.length;i++){
-          splitcsv=readcsv[i].split(",");
-          console.log( readcsv); 
-          
-              $.ajax({
-              url: '{% url 'photo:ajax_get_createword' %}',
-              type: 'GET',
-              async: false,
-              data: {'word': splitcsv[0],'trans':splitcsv[1],'category':categoryElement.val(),}
-            }).done(response => {
-              
-             
-             
-            })
-        }
-        printlist();
-        form.myfile.value='';
-    })
-  })
+    titleElement.text('{{word}}'+'の編集')
+    wordvalueElement.val('{{word}}');
+    transvalueElement.val('{{trans}}');
 
 
-    const printselect=()=>{
+    // const printselect=()=>{
            
-      var category_value=1;
+    //   var category_value=1;
       
-      $.ajax({
-          url: '{% url 'photo:ajax_get_printlist' %}',
-          type: 'GET',
-          data: {
-            'pk': category_value,
-                }
-        }).done(response => {              
+    //   $.ajax({
+    //       url: '{% url 'photo:ajax_get_printlist' %}',
+    //       type: 'GET',
+    //       data: {
+    //         'pk': category_value,
+    //             }
+    //     }).done(response => {              
           
-              var textLists=response.message4; 
-              textId=response.message5;             
+    //           var textLists=response.message4; 
+    //           textId=response.message5;             
               
              
-              for(let i=0; i<textLists.length; i++){
-                const select=document.getElementById('id_parent');
-                let option=document.createElement('option');
-                option.text=textLists[i];
-                option.value=textId[i];
+    //           for(let i=0; i<textLists.length; i++){
+    //             const select=document.getElementById('id_parent');
+    //             let option=document.createElement('option');
+    //             option.text=textLists[i];
+    //             option.value=textId[i];
                
-                select.appendChild(option);
-              }
-          });
-        };
-
+    //             select.appendChild(option);
+    //           }
+    //       });
+    //     };
+    // printselect();
         
-    const changeCategory = (select) => {
-        categoryElement.children().remove();
-        $.ajax({
-            url: '{% url 'photo:ajax_get_printlist' %}',
-            type: 'GET',
-            data: {
-                'pk': parentCategoryElement.val(),
-            }
-        }).done(response => {
-          var textLists=response.message3; 
-          textId=response.message6;             
+    // const changeCategory = (select) => {
+    //     categoryElement.children().remove();
+    //     $.ajax({
+    //         url: '{% url 'photo:ajax_get_printlist' %}',
+    //         type: 'GET',
+    //         data: {
+    //             'pk': parentCategoryElement.val(),
+    //         }
+    //     }).done(response => {
+    //       var textLists=response.message3; 
+    //       textId=response.message6;             
           
-          for(let i=0; i<textLists.length; i++){
-            const select=document.getElementById('id_category');
-            let option=document.createElement('option');
-            option.text=textLists[i];
-            option.value=textId[i];
+    //       for(let i=0; i<textLists.length; i++){
+    //         const select=document.getElementById('id_category');
+    //         let option=document.createElement('option');
+    //         option.text=textLists[i];
+    //         option.value=textId[i];
            
-            select.appendChild(option);
-          }
-            printlist();
-        });
-    };
-
-    parentCategoryElement.on('change', () => {
-        changeCategory();
-       
-    });
-
-    // 入力値に問題があって再表示された場合、ページ表示時点で小カテゴリが絞り込まれるようにする
-    if (parentCategoryElement.val()) {
-        const selectedCategory = categoryElement.val();
-        changeCategory(selectedCategory);
-    }
-
-    
-    const printlist=()=>{
-
-        var category_value=categoryElement.val();
+    //         select.appendChild(option);
+    //       }
             
-            $.ajax({
-              url: '{% url 'photo:ajax_get_printlist' %}',
-              type: 'GET',
-              data: {
-                'pk': category_value,
-                    }
-            }).done(response => {     
-                textLists=response.message;
-                transLists=response.message2;
-                
-                textId=response.message7;
-               
+    //     });
+    // };
 
-                var table = document.getElementById("tbl1");  // 行の削除
-                while (table.rows.length > 0) table.deleteRow(0);
-                for(let i=0; i<textLists.length; i++){
-                    const tbl=document.getElementById('tbl1');
-                    let tr=document.createElement('tr');
-                    
-                    let check=document.createElement('input');
-                    check.setAttribute('type','checkbox');
-                    check.setAttribute('value',textId[i]);
-                    let cell1=document.createElement('td');
-                    cell1.appendChild(check);
-                   
-                    let cell=document.createElement('td');
-                    let celltext=document.createTextNode(textLists[i]);
-                    cell.appendChild(celltext);
-                    let cell2=document.createElement('td');
-                    let celltrans=document.createTextNode(transLists[i]);
-                    cell2.appendChild(celltrans);
-                    tr.appendChild(cell1);
-                    tr.appendChild(cell);
-                    tr.appendChild(cell2);
-                   tbl.appendChild(tr);
-                  }
-                });
-              };
-        printselect();
-        parentCategoryElement.on("change",()=>{
-            printlist();
-        })
-    
+    // parentCategoryElement.on('change', () => {
+    //     changeCategory();
+       
+    // });
 
-    categoryElement.on("change",()=>{
-        printlist();
-    })
+    // // 入力値に問題があって再表示された場合、ページ表示時点で小カテゴリが絞り込まれるようにする
+    // if (parentCategoryElement.val()) {
+    //     const selectedCategory = categoryElement.val();
+    //     changeCategory(selectedCategory);
+    // }
 
- //削除
- $('#deletebutton').on('click',function(){
-  if(actionElement.val()=='delete_selected'){
-   
-    console.log('gf');
-    $('input:checked').each(function() {
-      var r = $(this).val();
-      
-      console.log(r);
-      $.ajax({
-        url: '{% url 'photo:ajax_get_deleteword' %}',
-        type: 'GET',
-        data: {'id': r}
-      }).done(response => {
-        console.log('delete');
-        printlist();
-      });
-  })
-    
-}else if(actionElement.val()=='delete_all'){
-  $('input').each(function() {
-    var r = $(this).val();
-    
-    console.log(r);
-    $.ajax({
-      url: '{% url 'photo:ajax_get_deleteword' %}',
-      type: 'GET',
-      async: false,
-      data: {'id': r}
-    }).done(response => {
-      
-      printlist();
-    });
-})
-}
-})
     $('#saveword').on('click',function(){
       if(checkkaraMoji(wordvalueElement.val())==false){
         return false;
@@ -268,14 +148,12 @@ form.myfile.addEventListener( 'change', function(e) {
       }else{
         console.log(wordvalueElement.val())
         $.ajax({
-          url: '{% url 'photo:ajax_get_createword' %}',
+          url: '{% url 'photo:ajax_get_editword' %}',
           type: 'GET',
-          data: {'word': wordvalueElement.val(),'trans':transvalueElement.val(),'category':categoryElement.val(),}
+          data: {'word': wordvalueElement.val(),'trans':transvalueElement.val(),'id':{{id}},}
         }).done(response => {
-          
-          printlist();
-          $('#wordvalue').val(""); 
-          $('#transvalue').val(""); 
+        
+          window.location.assign("{% url 'photo:create' %}");
         });
       }
     });
